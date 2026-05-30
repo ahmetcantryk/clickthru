@@ -1,0 +1,6 @@
+{
+  "name": "@clickthru/api",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Backend — iskelet. Auth, demo CRUD, paylaşım linki (ACCEPTANCE §5). Kendi fazında."
+}

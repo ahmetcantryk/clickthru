@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" font-family="Geist, Inter, system-ui, sans-serif">
+  <defs>
+    <linearGradient id="b4" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0D9488"/><stop offset="0.55" stop-color="#0D9488"/><stop offset="1" stop-color="#6D5BF5"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="0" y="0" width="232" height="720" fill="#F6F7F9"/>
+  <line x1="232" y1="0" x2="232" y2="720" stroke="#0000000F"/>
+  <rect x="28" y="30" width="30" height="30" rx="9" fill="url(#b4)"/>
+  <text x="70" y="51" font-size="17" font-weight="600" fill="#0B0B12">Acme</text>
+  <text x="62" y="118" font-size="15" fill="#5B5B66">Panel</text>
+  <text x="62" y="166" font-size="15" fill="#5B5B66">Müşteriler</text>
+  <text x="62" y="214" font-size="15" fill="#5B5B66">Raporlar</text>
+  <rect x="20" y="234" width="192" height="40" rx="11" fill="#0D948814"/>
+  <text x="62" y="262" font-size="15" font-weight="600" fill="#0D9488">Ayarlar</text>
+
+  <text x="276" y="56" font-size="26" font-weight="700" fill="#0B0B12">Ayarlar</text>
+
+  <!-- bildirim ayarı (toggle ≈ 0.7,0.4 → 896,288) -->
+  <rect x="276" y="100" width="700" height="260" rx="16" fill="#FFFFFF" stroke="#00000014"/>
+  <text x="300" y="140" font-size="16" font-weight="600" fill="#0B0B12">Bildirimler</text>
+  <text x="300" y="200" font-size="15" fill="#5B5B66">E-posta bildirimleri</text>
+  <rect x="864" y="186" width="64" height="32" rx="16" fill="#E5E7EB"/><circle cx="882" cy="202" r="12" fill="#FFFFFF"/>
+  <text x="300" y="288" font-size="15" fill="#5B5B66">Anlık bildirimler</text>
+  <rect x="864" y="274" width="64" height="32" rx="16" fill="url(#b4)"/><circle cx="910" cy="290" r="12" fill="#FFFFFF"/>
+
+  <!-- plan kartı (≈ 0.3,0.7 → 384,504) -->
+  <rect x="276" y="400" width="430" height="260" rx="16" fill="#FFFFFF" stroke="#00000014"/>
+  <text x="300" y="444" font-size="13" font-weight="600" fill="#8A8A94">PLANIN</text>
+  <text x="300" y="486" font-size="26" font-weight="700" fill="#0B0B12">Pro</text>
+  <text x="300" y="520" font-size="14" fill="#5B5B66">Ayda ₺299 · 10 koltuk</text>
+  <rect x="300" y="560" width="180" height="48" rx="12" fill="url(#b4)"/>
+  <text x="390" y="590" font-size="15" font-weight="600" fill="#FFFFFF" text-anchor="middle">Planı yükselt</text>
+
+  <rect x="746" y="400" width="478" height="260" rx="16" fill="#FFFFFF" stroke="#00000014"/>
+  <text x="770" y="444" font-size="16" font-weight="600" fill="#0B0B12">Ekip</text>
+  <text x="770" y="492" font-size="15" fill="#5B5B66">6 üye · 4 boş koltuk</text>
+</svg>

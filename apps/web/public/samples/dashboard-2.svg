@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" font-family="Geist, Inter, system-ui, sans-serif">
+  <defs>
+    <linearGradient id="brand2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0D9488"/>
+      <stop offset="0.55" stop-color="#0D9488"/>
+      <stop offset="1" stop-color="#6D5BF5"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- sidebar -->
+  <rect x="0" y="0" width="232" height="720" fill="#F6F7F9"/>
+  <line x1="232" y1="0" x2="232" y2="720" stroke="#0000000F"/>
+  <rect x="28" y="30" width="30" height="30" rx="9" fill="url(#brand2)"/>
+  <text x="70" y="51" font-size="17" font-weight="600" fill="#0B0B12">Acme</text>
+  <text x="62" y="118" font-size="15" fill="#5B5B66">Panel</text>
+  <text x="62" y="166" font-size="15" fill="#5B5B66">Gelen kutusu</text>
+  <text x="62" y="210" font-size="15" fill="#5B5B66">Müşteriler</text>
+  <rect x="20" y="234" width="192" height="40" rx="11" fill="#0D948814"/>
+  <text x="62" y="262" font-size="15" font-weight="600" fill="#0D9488">Raporlar</text>
+  <text x="62" y="306" font-size="15" fill="#5B5B66">Ayarlar</text>
+
+  <!-- header -->
+  <text x="276" y="60" font-size="26" font-weight="700" fill="#0B0B12">Raporlar</text>
+  <text x="276" y="88" font-size="15" fill="#8A8A94">Tüm performans raporların</text>
+
+  <!-- date range filter (hotspot ~0.3, 0.5) -->
+  <rect x="276" y="320" width="232" height="80" rx="16" fill="#FFFFFF" stroke="#0D9488" stroke-width="2"/>
+  <text x="300" y="352" font-size="13" fill="#8A8A94">Tarih aralığı</text>
+  <text x="300" y="380" font-size="17" font-weight="600" fill="#0B0B12">Son 30 gün</text>
+
+  <!-- table -->
+  <rect x="540" y="320" width="684" height="356" rx="16" fill="#FFFFFF" stroke="#00000014"/>
+  <line x1="540" y1="372" x2="1224" y2="372" stroke="#0000000F"/>
+  <text x="566" y="354" font-size="13" font-weight="600" fill="#8A8A94">Rapor</text>
+  <text x="980" y="354" font-size="13" font-weight="600" fill="#8A8A94">Durum</text>
+  <g font-size="15" fill="#0B0B12">
+    <text x="566" y="416">Aylık özet</text><text x="980" y="416" fill="#0D9488">Hazır</text>
+    <text x="566" y="468">Kohort analizi</text><text x="980" y="468" fill="#0D9488">Hazır</text>
+    <text x="566" y="520">Gelir dağılımı</text><text x="980" y="520" fill="#8A8A94">Taslak</text>
+    <text x="566" y="572">Kullanıcı akışı</text><text x="980" y="572" fill="#0D9488">Hazır</text>
+    <text x="566" y="624">Funnel raporu</text><text x="980" y="624" fill="#8A8A94">Taslak</text>
+  </g>
+
+  <!-- stat strip -->
+  <rect x="276" y="130" width="300" height="150" rx="16" fill="#FFFFFF" stroke="#00000014"/>
+  <text x="300" y="168" font-size="14" fill="#8A8A94">Toplam rapor</text>
+  <text x="300" y="214" font-size="34" font-weight="700" fill="#0B0B12">128</text>
+  <rect x="600" y="130" width="300" height="150" rx="16" fill="url(#brand2)"/>
+  <text x="624" y="168" font-size="14" fill="#FFFFFFCC">Bu ay paylaşılan</text>
+  <text x="624" y="214" font-size="34" font-weight="700" fill="#FFFFFF">37</text>
+</svg>

@@ -1,0 +1,6 @@
+{
+  "name": "@clickthru/render-worker",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Sunucu-taraflı export (video/gif/html) — iskelet. Faz 2. Playwright + ffmpeg."
+}

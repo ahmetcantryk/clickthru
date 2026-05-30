@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" font-family="Geist, Inter, system-ui, sans-serif">
+  <defs>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0D9488"/>
+      <stop offset="0.55" stop-color="#0D9488"/>
+      <stop offset="1" stop-color="#6D5BF5"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+
+  <!-- sidebar -->
+  <rect x="0" y="0" width="232" height="720" fill="#F6F7F9"/>
+  <line x1="232" y1="0" x2="232" y2="720" stroke="#0000000F"/>
+  <rect x="28" y="30" width="30" height="30" rx="9" fill="url(#brand)"/>
+  <text x="70" y="51" font-size="17" font-weight="600" fill="#0B0B12">Acme</text>
+
+  <!-- nav -->
+  <rect x="20" y="92" width="192" height="40" rx="11" fill="#0D948814"/>
+  <circle cx="44" cy="112" r="4" fill="#0D9488"/>
+  <text x="62" y="118" font-size="15" font-weight="600" fill="#0D9488">Panel</text>
+  <text x="62" y="166" font-size="15" fill="#5B5B66">Gelen kutusu</text>
+  <text x="62" y="210" font-size="15" fill="#5B5B66">Müşteriler</text>
+  <text x="62" y="254" font-size="15" fill="#5B5B66">Raporlar</text>
+  <text x="62" y="298" font-size="15" fill="#5B5B66">Ayarlar</text>
+
+  <!-- header -->
+  <text x="276" y="60" font-size="26" font-weight="700" fill="#0B0B12">Panel</text>
+  <text x="276" y="88" font-size="15" fill="#8A8A94">Bugünkü performans</text>
+
+  <!-- primary CTA (hotspot ~0.78, 0.22) -->
+  <rect x="924" y="130" width="190" height="54" rx="15" fill="url(#brand)"/>
+  <text x="1019" y="164" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle">+ Yeni rapor</text>
+
+  <!-- stat cards -->
+  <g>
+    <rect x="276" y="214" width="300" height="118" rx="16" fill="#FFFFFF" stroke="#00000014"/>
+    <text x="300" y="252" font-size="14" fill="#8A8A94">Gelir</text>
+    <text x="300" y="292" font-size="30" font-weight="700" fill="#0B0B12">₺48.2K</text>
+
+    <rect x="600" y="214" width="300" height="118" rx="16" fill="#FFFFFF" stroke="#00000014"/>
+    <text x="624" y="252" font-size="14" fill="#8A8A94">Aktif kullanıcı</text>
+    <text x="624" y="292" font-size="30" font-weight="700" fill="#0B0B12">1.284</text>
+
+    <rect x="924" y="214" width="300" height="118" rx="16" fill="#FFFFFF" stroke="#00000014"/>
+    <text x="948" y="252" font-size="14" fill="#8A8A94">Dönüşüm</text>
+    <text x="948" y="292" font-size="30" font-weight="700" fill="#0B0B12">%6.4</text>
+  </g>
+
+  <!-- chart -->
+  <rect x="276" y="356" width="948" height="320" rx="16" fill="#FFFFFF" stroke="#00000014"/>
+  <text x="300" y="394" font-size="16" font-weight="600" fill="#0B0B12">Haftalık gelir</text>
+  <g>
+    <rect x="320" y="520" width="78" height="120" rx="8" fill="url(#brand)" opacity="0.5"/>
+    <rect x="430" y="470" width="78" height="170" rx="8" fill="url(#brand)" opacity="0.6"/>
+    <rect x="540" y="540" width="78" height="100" rx="8" fill="url(#brand)" opacity="0.45"/>
+    <rect x="650" y="440" width="78" height="200" rx="8" fill="url(#brand)" opacity="0.7"/>
+    <rect x="760" y="500" width="78" height="140" rx="8" fill="url(#brand)" opacity="0.55"/>
+    <rect x="870" y="460" width="78" height="180" rx="8" fill="url(#brand)" opacity="0.65"/>
+    <rect x="980" y="410" width="78" height="230" rx="8" fill="url(#brand)" opacity="0.85"/>
+    <rect x="1090" y="490" width="78" height="150" rx="8" fill="url(#brand)" opacity="0.6"/>
+  </g>
+</svg>

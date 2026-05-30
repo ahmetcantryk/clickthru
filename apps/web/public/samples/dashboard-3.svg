@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" font-family="Geist, Inter, system-ui, sans-serif">
+  <defs>
+    <linearGradient id="b3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0D9488"/><stop offset="0.55" stop-color="#0D9488"/><stop offset="1" stop-color="#6D5BF5"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="#FFFFFF"/>
+  <rect x="0" y="0" width="232" height="720" fill="#F6F7F9"/>
+  <line x1="232" y1="0" x2="232" y2="720" stroke="#0000000F"/>
+  <rect x="28" y="30" width="30" height="30" rx="9" fill="url(#b3)"/>
+  <text x="70" y="51" font-size="17" font-weight="600" fill="#0B0B12">Acme</text>
+  <text x="62" y="118" font-size="15" fill="#5B5B66">Panel</text>
+  <text x="62" y="166" font-size="15" fill="#5B5B66">Gelen kutusu</text>
+  <rect x="20" y="186" width="192" height="40" rx="11" fill="#0D948814"/>
+  <text x="62" y="214" font-size="15" font-weight="600" fill="#0D9488">Müşteriler</text>
+  <text x="62" y="262" font-size="15" fill="#5B5B66">Raporlar</text>
+  <text x="62" y="306" font-size="15" fill="#5B5B66">Ayarlar</text>
+
+  <text x="276" y="56" font-size="26" font-weight="700" fill="#0B0B12">Müşteriler</text>
+  <!-- arama (≈0.5,0.16) -->
+  <rect x="276" y="92" width="640" height="46" rx="12" fill="#FFFFFF" stroke="#00000014"/>
+  <text x="300" y="121" font-size="15" fill="#8A8A94">Müşteri ara…</text>
+  <rect x="1064" y="92" width="160" height="46" rx="12" fill="url(#b3)"/>
+  <text x="1144" y="121" font-size="15" font-weight="600" fill="#FFFFFF" text-anchor="middle">+ Ekle</text>
+
+  <!-- tablo -->
+  <rect x="276" y="166" width="948" height="500" rx="16" fill="#FFFFFF" stroke="#00000014"/>
+  <line x1="276" y1="214" x2="1224" y2="214" stroke="#0000000F"/>
+  <text x="300" y="197" font-size="13" font-weight="600" fill="#8A8A94">İsim</text>
+  <text x="700" y="197" font-size="13" font-weight="600" fill="#8A8A94">Plan</text>
+  <text x="1000" y="197" font-size="13" font-weight="600" fill="#8A8A94">Durum</text>
+  <g font-size="15" fill="#0B0B12">
+    <text x="300" y="260">Zeynep Kaya</text><text x="700" y="260" fill="#5B5B66">Pro</text><text x="1000" y="260" fill="#0D9488">Aktif</text>
+    <text x="300" y="312">Mehmet Demir</text><text x="700" y="312" fill="#5B5B66">Team</text><text x="1000" y="312" fill="#0D9488">Aktif</text>
+    <text x="300" y="364">Elif Şahin</text><text x="700" y="364" fill="#5B5B66">Free</text><text x="1000" y="364" fill="#8A8A94">Deneme</text>
+    <text x="300" y="416">Can Yılmaz</text><text x="700" y="416" fill="#5B5B66">Pro</text><text x="1000" y="416" fill="#0D9488">Aktif</text>
+    <text x="300" y="468">Aylin Arslan</text><text x="700" y="468" fill="#5B5B66">Team</text><text x="1000" y="468" fill="#8A8A94">Pasif</text>
+  </g>
+  <!-- vurgulu satır ≈ y0.45 (324) -->
+  <rect x="284" y="288" width="932" height="44" rx="10" fill="#0D94880D"/>
+</svg>

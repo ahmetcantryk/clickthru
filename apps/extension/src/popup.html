@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      :root { color-scheme: light; }
+      body { width: 280px; margin: 0; font-family: system-ui, -apple-system, sans-serif; color: #0b0b12; background: #fff; }
+      .wrap { padding: 16px; }
+      h1 { font-size: 14px; margin: 0 0 2px; }
+      p.sub { font-size: 11px; color: #5b5b66; margin: 0 0 14px; }
+      label { font-size: 11px; color: #5b5b66; display: block; margin-bottom: 4px; }
+      input { width: 100%; box-sizing: border-box; height: 32px; padding: 0 10px; border: 1px solid rgba(15, 15, 30, 0.12); border-radius: 8px; font-size: 13px; margin-bottom: 12px; }
+      .row { display: flex; gap: 8px; margin-bottom: 10px; }
+      .row button { flex: 1; }
+      button { height: 34px; border: 0; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; }
+      button:disabled { opacity: 0.4; cursor: default; }
+      #start { background: #2142e7; color: #fff; }
+      #stop { background: #f1f1f4; color: #0b0b12; }
+      #save { width: 100%; background: #2142e7; color: #fff; }
+      .stat { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #5b5b66; margin: 4px 0 12px; }
+      .stat b { color: #2142e7; font-size: 14px; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>clickthru capture</h1>
+      <p class="sub">Kaydet → sayfada tıkla → demo oluştur.</p>
+      <label for="title">Demo başlığı</label>
+      <input id="title" placeholder="Yakalanan demo" />
+      <div class="row">
+        <button id="start">● Kaydı başlat</button>
+        <button id="stop">■ Durdur</button>
+      </div>
+      <div class="stat"><span id="status">Hazır</span><span><b id="count">0</b> adım</span></div>
+      <button id="save">Demoyu oluştur &amp; aç</button>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>

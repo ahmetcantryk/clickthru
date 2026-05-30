@@ -1,0 +1,19 @@
+{
+  "name": "@clickthru/extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Chrome MV3 capture uzantısı — tıklamaları yakalar, screenshot'a çevirir, demo üretip Supabase'e kaydeder.",
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clickthru/schema": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.1.42",
+    "esbuild": "^0.28.0",
+    "typescript": "^5.7.2"
+  }
+}
