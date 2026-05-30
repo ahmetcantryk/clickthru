@@ -11,6 +11,16 @@
   type Phase = 'countdown' | 'recording' | 'saving';
   let phase: Phase = 'countdown';
 
+  // Eklenti bağlamı geçerli mi? Dev'de uzantı yeniden yüklenince eski content script kopar;
+  // bu durumda chrome.* çağrıları "Extension context invalidated" atar → sessizce teardown.
+  const alive = (): boolean => {
+    try {
+      return !!chrome.runtime?.id;
+    } catch {
+      return false;
+    }
+  };
+
   const host = document.createElement('div');
   host.style.cssText = 'all:initial;position:fixed;inset:0;z-index:2147483647;pointer-events:none;';
   const root = host.attachShadow({ mode: 'open' });
@@ -101,6 +111,20 @@
   const xBtn = $<HTMLButtonElement>('.x-btn');
   const stopBtn = $<HTMLButtonElement>('.stop-btn');
 
+  // --- Güvenli mesajlaşma: bağlam koptuysa sessizce teardown ---
+  async function send<T = unknown>(message: unknown): Promise<T | undefined> {
+    if (!alive()) {
+      teardown();
+      return undefined;
+    }
+    try {
+      return (await chrome.runtime.sendMessage(message)) as T;
+    } catch {
+      teardown();
+      return undefined;
+    }
+  }
+
   // --- Geri sayım (5'ten) → kayıt ---
   let n = START_FROM;
   const tick = window.setInterval(() => {
@@ -122,27 +146,25 @@
     timer.classList.add('hidden');
     pillTop.classList.remove('hidden');
     bar.classList.remove('hidden');
-    await chrome.storage.local.set({ recording: true, steps: [] });
+    if (!alive()) return teardown();
+    try {
+      await chrome.storage.local.set({ recording: true, steps: [] });
+    } catch {
+      teardown();
+    }
   }
 
   // --- Sayfa tıklamaları → yakalama (overlay'in kendi tıklamaları hariç) ---
-  window.addEventListener(
-    'pointerdown',
-    (e) => {
-      if (phase !== 'recording') return;
-      if (e.target === host) return;
-      void capture(e.clientX / window.innerWidth, e.clientY / window.innerHeight);
-    },
-    true,
-  );
+  const onPointerDown = (e: PointerEvent): void => {
+    if (phase !== 'recording') return;
+    if (e.target === host) return;
+    void capture(e.clientX / window.innerWidth, e.clientY / window.innerHeight);
+  };
 
   async function capture(x: number, y: number): Promise<void> {
+    if (!alive()) return teardown();
     host.style.visibility = 'hidden';
-    try {
-      await chrome.runtime.sendMessage({ type: 'CLICK', x, y });
-    } catch {
-      // arka plan uyanıyor olabilir
-    }
+    await send({ type: 'CLICK', x, y });
     host.style.visibility = 'visible';
   }
 
@@ -155,7 +177,7 @@
     bar.classList.add('hidden');
     xBtn.classList.add('hidden');
     toast.classList.remove('hidden');
-    const res = (await chrome.runtime.sendMessage({ type: 'FINALIZE' })) as { ok: boolean; error?: string } | undefined;
+    const res = await send<{ ok: boolean; error?: string }>({ type: 'FINALIZE' });
     if (res && !res.ok) {
       toast.textContent = `Hata: ${res.error ?? 'kaydedilemedi'}`;
       window.setTimeout(teardown, 2600);
@@ -165,13 +187,17 @@
   }
 
   function cancel(): void {
-    void chrome.runtime.sendMessage({ type: 'CANCEL' });
+    void send({ type: 'CANCEL' });
     teardown();
   }
 
+  let torn = false;
   function teardown(): void {
+    if (torn) return;
+    torn = true;
     window.clearInterval(tick);
     window.removeEventListener('keydown', onKey, true);
+    window.removeEventListener('pointerdown', onPointerDown, true);
     host.remove();
     w.__clickthruRecorder = false;
   }
@@ -188,5 +214,6 @@
 
   stopBtn.addEventListener('click', () => void stop());
   xBtn.addEventListener('click', () => cancel());
+  window.addEventListener('pointerdown', onPointerDown, true);
   window.addEventListener('keydown', onKey, true);
 })();
