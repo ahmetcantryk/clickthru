@@ -16,15 +16,17 @@ pnpm --filter @clickthru/extension build
 
 1. `chrome://extensions` → sağ üstte **Developer mode** açık.
 2. **Load unpacked** → `apps/extension/dist` klasörünü seç.
-3. (Önceden açık sekmelerde) kaydetmeden önce sayfayı **yenile** — içerik betiği yeni yüklenen sayfalara enjekte olur.
 
-## Kullanım
+> Sayfa-içi recorder ikon tıklayınca enjekte edilir; eski sekmelerde **yenilemeye gerek yok**.
 
-1. `pnpm --filter @clickthru/web dev` ile web'i çalıştır (Studio = `http://localhost:3000`, `src/config.ts`'te ayarlı).
-2. Yakalamak istediğin sayfaya git, uzantı simgesine tıkla → **Kaydı başlat**.
-3. Sayfada akışını tıkla — her tıklama bir adım (o anki ekran + tıklama noktası hotspot olur).
-4. **Durdur** → **Demoyu oluştur & aç**. Demo Supabase'e yazılır, yeni sekmede `/studio?demo=<id>` açılır.
-5. Studio'da callout/zoom/metin ekleyip **Paylaş** ile linkini al.
+## Kullanım (sayfa-içi recorder)
+
+1. `pnpm --filter @clickthru/web dev` ile web'i çalıştır (Studio = `http://localhost:3000`, `src/config.ts`).
+2. Yakalamak istediğin sayfaya git, **uzantı simgesine tıkla** → açılan **dropdown**'dan (opsiyonel başlık girip) **Kaydı başlat**.
+3. Ekranda **5-4-3-2-1 geri sayım** (beyaz saydam overlay) → kayıt başlar. Üstte **"Recording area"** şeridi, **ortada ✕ iptal** (Esc), altta **Kaydı durdur** çubuğu (**Ctrl+Y**).
+4. Sayfada akışını tıkla — her tıklama bir adım (o anki ekran + tıklama noktası hotspot). Yakalama anında overlay gizlenir, screenshot'a girmez.
+5. **Kaydı durdur** (veya Ctrl+Y) → demo Supabase'e yazılır, yeni sekmede `/studio?demo=<id>` açılır. **✕ / Esc** kaydetmeden iptal eder.
+6. Studio'da callout/zoom/metin ekleyip **Paylaş** ile linkini al.
 
 ## Yapılandırma
 
@@ -34,9 +36,8 @@ pnpm --filter @clickthru/extension build
 
 ## Mimari
 
-- **content.ts** — `pointerdown`'da (kayıt açıkken) oransal konumu arka plana yollar. Durum `chrome.storage.local`'dan okunur; navigasyonda otomatik yeniden enjekte.
-- **background.ts** — `CLICK` mesajında `chrome.tabs.captureVisibleTab` ile görünür sekmeyi yakalar (throttle'lı), adımı storage'a ekler.
-- **popup.ts** — başlat/durdur/kaydet; adımlardan `Demo` (schema tipleri) kurar, Supabase REST'e `POST`'lar, Studio'yu açar.
+- **content.ts** — sayfa-içi recorder overlay (Shadow DOM ile izole): geri sayım, "Recording area" şeridi, Durdur çubuğu, ✕ iptal, Ctrl+Y/Esc. `pointerdown`'da konumu arka plana yollar; yakalamada overlay'i gizler.
+- **background.ts** — ikon tıklayınca `scripting.executeScript` ile content'i enjekte eder; `CLICK`'te `captureVisibleTab` (throttle'lı) → adımı storage'a ekler; `FINALIZE`'da `Demo` (schema tipleri) kurup Supabase REST'e `POST`'lar ve Studio'yu açar; `CANCEL`'da temizler.
 
 ## Bilinen sınırlar (MVP)
 
