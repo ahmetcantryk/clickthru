@@ -1,7 +1,8 @@
 'use client';
 
 import { useRef, useState, type CSSProperties } from 'react';
-import { BrowserFrame, ScreenScene, cn, isDarkColor } from '@clickthru/ui';
+import { ArrowRight } from 'lucide-react';
+import { BrowserFrame, ScreenScene, calloutBorder, calloutShadow, cn, isDarkColor } from '@clickthru/ui';
 import type { CalloutPointer, Focus } from '@clickthru/schema';
 import { useEditorStore, type FocusRect as FocusRectVal } from '@/store/editor-store';
 
@@ -33,6 +34,7 @@ export function EditCanvas() {
   const stepIndex = useEditorStore((s) => s.stepIndex);
   const selection = useEditorStore((s) => s.selection);
   const select = useEditorStore((s) => s.select);
+  const selectStep = useEditorStore((s) => s.selectStep);
   const setHotspotPos = useEditorStore((s) => s.setHotspotPos);
   const setFocusRect = useEditorStore((s) => s.setFocusRect);
   const setCalloutPos = useEditorStore((s) => s.setCalloutPos);
@@ -42,6 +44,7 @@ export function EditCanvas() {
   const [guide, setGuide] = useState<Guide | null>(null);
   const step = demo.steps[stepIndex];
   const background = step?.background ?? demo.defaultBackground;
+  const total = demo.steps.length;
 
   function startDrag(onChange: (x: number, y: number) => void) {
     return (e: React.PointerEvent) => {
@@ -95,7 +98,7 @@ export function EditCanvas() {
 
   if (!step) {
     return (
-      <ScreenScene className="h-full" background={demo.defaultBackground}>
+      <ScreenScene data-theme="light" className="h-full" background={demo.defaultBackground}>
         <div className="flex items-center justify-center py-20 text-sm text-ink-faint">
           Adım yok — soldan “PC'den görsel ekle” ile başla.
         </div>
@@ -107,7 +110,7 @@ export function EditCanvas() {
   const callout = step.callout;
 
   return (
-    <ScreenScene className="h-full" background={background}>
+    <ScreenScene data-theme="light" className="h-full" background={background}>
       <BrowserFrame url={`studio/${demo.id}`} variant={demo.wrapper ?? 'browser'}>
         <div
           ref={containerRef}
@@ -208,8 +211,7 @@ export function EditCanvas() {
           )}
 
           {callout && (callout.title || callout.body) && (
-            <button
-              type="button"
+            <div
               onPointerDown={(e) => {
                 e.stopPropagation();
                 select({ kind: 'callout' });
@@ -227,10 +229,11 @@ export function EditCanvas() {
                 height: callout.height || undefined,
                 borderRadius: callout.style?.radius ?? 20,
                 background: callout.style?.bg ?? '#FFFFFF',
-                borderColor: callout.style?.borderColor ?? 'rgba(15,15,30,0.08)',
-                borderWidth: callout.style?.borderWidth ?? (callout.style?.bg ? 0 : 1),
+                // Kenarlık + gölge callout'un kendi rengine tonlanır (player ile birebir).
+                borderColor: callout.style?.borderColor ?? calloutBorder(callout.style?.bg ?? '#FFFFFF'),
+                borderWidth: callout.style?.borderWidth ?? 1,
                 borderStyle: 'solid',
-                boxShadow: '0 18px 44px -12px rgba(20,22,60,0.18)',
+                boxShadow: calloutShadow(callout.style?.bg ?? '#FFFFFF'),
                 padding: 16,
               }}
             >
@@ -257,7 +260,47 @@ export function EditCanvas() {
                   {callout.body}
                 </p>
               )}
-            </button>
+              {(callout.showBack !== false || callout.showNext !== false) && (
+                <div className="mt-3.5 flex items-center gap-2">
+                  {callout.showBack !== false && (
+                    <button
+                      type="button"
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (stepIndex > 0) selectStep(stepIndex - 1);
+                      }}
+                      className={cn(
+                        'cursor-pointer rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors',
+                        isDarkColor(callout.style?.bg)
+                          ? 'border-white/25 bg-white/10 text-white/85 hover:bg-white/20'
+                          : 'border-hairline bg-surface-subtle text-ink-muted hover:text-ink',
+                      )}
+                    >
+                      Geri
+                    </button>
+                  )}
+                  <div className="flex-1" />
+                  {callout.showNext !== false && (
+                    <button
+                      type="button"
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (stepIndex < total - 1) selectStep(stepIndex + 1);
+                      }}
+                      className={cn(
+                        'inline-flex cursor-pointer items-center gap-1 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-[filter]',
+                        isDarkColor(callout.style?.bg) ? 'bg-white text-accent' : 'bg-accent text-white hover:brightness-110',
+                      )}
+                    >
+                      İleri
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           )}
 
           {guide && <GuideOverlay guide={guide} />}

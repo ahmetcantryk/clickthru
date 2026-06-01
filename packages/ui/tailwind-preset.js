@@ -1,48 +1,66 @@
 // clickthru tasarım token'ları — TEK kaynak (CLAUDE.md §6).
-// Açık (beyaz) tema. Primary: #2142e7. CommonJS (web tailwind.config + PostCSS yükler).
+// Cool-neutral teknik editör paleti; mavi accent. Dark + Light tema.
+// Renkler CSS değişkenlerine (oklch bileşenleri) bağlanır → tema [data-theme] ile çevrilir.
+// Değişkenler `apps/web/src/app/globals.css` içinde light/dark için tanımlanır.
+// Bileşenler değişmeden çalışır: bg-surface / text-ink / bg-accent / border-hairline … hepsi tema-duyarlı.
+
+/** oklch(var(--x) / <alpha-value>) — Tailwind opaklık modifikatörlerini (/50 vb.) korur. */
+const c = (v) => `oklch(var(${v}) / <alpha-value>)`;
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   theme: {
     extend: {
       colors: {
-        canvas: '#FFFFFF',
+        // editör zemini ("pit" çevresi) — uygulama arka planı
+        canvas: c('--bg'),
         surface: {
-          DEFAULT: '#FFFFFF',
-          subtle: '#F6F7F9',
+          DEFAULT: c('--panel'), // paneller / kartlar / üst bar
+          subtle: c('--panel-2'), // inputlar / hafif dolgular
+          raised: c('--panel-3'), // hover dolgu / stepper
+          elevated: c('--elev'), // popover / dock / dropdown
+          pit: c('--pit'), // tuval kuyusu (canvas well)
         },
         ink: {
-          DEFAULT: '#0B0B12',
-          muted: '#5B5B66',
-          faint: '#8A8A94',
+          DEFAULT: c('--text'),
+          muted: c('--text-2'),
+          faint: c('--text-3'),
         },
-        // primary — tek mavi: #2142e7
+        // primary — tasarımın mavisi (oklch ~256). on-accent = accent üstü metin.
         accent: {
-          DEFAULT: '#2142e7',
-          foreground: '#FFFFFF',
-          strong: '#1B38C4',
-          blue: '#2142e7',
-          purple: '#2142e7',
-          muted: 'rgba(33, 66, 231, 0.10)',
-          ring: 'rgba(33, 66, 231, 0.40)',
+          DEFAULT: c('--accent'),
+          foreground: c('--on-accent'),
+          strong: c('--accent-2'),
+          blue: c('--accent'),
+          purple: c('--accent'),
+          muted: 'oklch(var(--accent) / 0.12)',
+          ring: 'oklch(var(--accent) / 0.40)',
         },
-        hairline: 'rgba(15, 15, 30, 0.08)',
+        hairline: {
+          DEFAULT: 'oklch(var(--line) / <alpha-value>)',
+          strong: 'oklch(var(--line-2) / <alpha-value>)',
+        },
+        // durum renkleri
+        success: { DEFAULT: c('--good'), soft: 'oklch(var(--good) / 0.14)' },
+        danger: { DEFAULT: c('--bad'), soft: 'oklch(var(--bad) / 0.14)' },
+        warn: { DEFAULT: c('--warn'), soft: 'oklch(var(--warn) / 0.16)' },
       },
       backgroundImage: {
-        // primary buton/hotspot/callout — düz #2142e7
-        'accent-grad': 'linear-gradient(0deg, #2142e7, #2142e7)',
+        // primary buton/hotspot/callout — düz accent (gradient yok, §10)
+        'accent-grad': 'linear-gradient(0deg, oklch(var(--accent)), oklch(var(--accent)))',
       },
       fontFamily: {
-        sans: ['var(--font-geist-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        mono: ['var(--font-geist-mono)', 'ui-monospace', 'monospace'],
+        sans: ['var(--font-hanken)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-jetbrains)', 'ui-monospace', 'monospace'],
       },
       borderRadius: {
         '2xl': '1.25rem',
         '3xl': '1.75rem',
       },
       boxShadow: {
-        soft: '0 14px 40px -16px rgba(20, 22, 60, 0.18), 0 4px 12px -6px rgba(20, 22, 60, 0.10)',
-        glow: '0 10px 30px -8px rgba(33, 66, 231, 0.45)',
+        soft: 'var(--shadow)',
+        'soft-sm': 'var(--shadow-sm)',
+        glow: '0 10px 30px -8px oklch(var(--accent) / 0.42)',
       },
       transitionTimingFunction: {
         scene: 'cubic-bezier(0.22, 0.61, 0.36, 1)',

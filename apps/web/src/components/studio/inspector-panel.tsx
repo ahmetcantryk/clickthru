@@ -1,9 +1,22 @@
 'use client';
 
-import { ChevronLeft, Frame, Maximize2, MoveHorizontal, MoveVertical, Square } from 'lucide-react';
+import {
+  ChevronLeft,
+  Crosshair,
+  Frame,
+  LayoutTemplate,
+  Maximize2,
+  MessageSquare,
+  MousePointerClick,
+  MoveHorizontal,
+  MoveVertical,
+  PanelRightClose,
+  Square,
+  Type,
+} from 'lucide-react';
 import { cn } from '@clickthru/ui';
 import type { FocusEase, TextOverlaySize, Wrapper } from '@clickthru/schema';
-import { useEditorStore } from '@/store/editor-store';
+import { useEditorStore, type Selection } from '@/store/editor-store';
 import { ColorSwatches, PointerPicker, Segmented } from './controls';
 import { ApplyAllButton, Field, NumberField, ReadonlyPos, RemoveButton, TextArea, TextInput, Toggle } from './fields';
 
@@ -31,19 +44,88 @@ const WRAPPERS: { value: Wrapper; label: string }[] = [
   { value: 'none', label: 'Yok' },
 ];
 
-export function InspectorPanel() {
+// Inspector başlık bilgisi (ikon + başlık + alt başlık) — seçime göre.
+function shellMeta(kind: Selection['kind'], stepIndex: number): { icon: React.ReactNode; title: string; sub: string } {
+  switch (kind) {
+    case 'demo':
+      return { icon: <LayoutTemplate className="h-4 w-4" />, title: 'Design', sub: 'Demo ayarları' };
+    case 'step':
+      return { icon: <Frame className="h-4 w-4" />, title: `Adım ${stepIndex + 1}`, sub: 'Adım ayarları' };
+    case 'hotspot':
+      return { icon: <MousePointerClick className="h-4 w-4" />, title: 'Hotspot', sub: 'Tıklama alanı' };
+    case 'callout':
+      return { icon: <MessageSquare className="h-4 w-4" />, title: 'Callout', sub: 'Açıklama kartı' };
+    case 'focus':
+      return { icon: <Crosshair className="h-4 w-4" />, title: 'Focus', sub: 'Kamera bölgesi' };
+    case 'overlay':
+      return { icon: <Type className="h-4 w-4" />, title: 'Metin', sub: 'Serbest metin' };
+  }
+}
+
+export function InspectorPanel({ open, onCollapse }: { open: boolean; onCollapse: () => void }) {
   const selection = useEditorStore((s) => s.selection);
+  const stepIndex = useEditorStore((s) => s.stepIndex);
   const step = useEditorStore((s) => s.demo.steps[s.stepIndex]);
+  const select = useEditorStore((s) => s.select);
+  const meta = shellMeta(selection.kind, stepIndex);
+  const isElement = ['hotspot', 'callout', 'focus', 'overlay'].includes(selection.kind);
 
   return (
-    <aside className="flex w-80 shrink-0 flex-col gap-4 overflow-y-auto border-l border-hairline bg-surface p-4">
-      <Header />
-      {selection.kind === 'demo' && <DemoEditor />}
-      {selection.kind === 'step' && step && <StepEditor />}
-      {selection.kind === 'hotspot' && step?.hotspot && <HotspotEditor />}
-      {selection.kind === 'callout' && step?.callout && <CalloutEditor />}
-      {selection.kind === 'focus' && step?.focus && <FocusEditor />}
-      {selection.kind === 'overlay' && <OverlayEditor id={selection.id} />}
+    <aside
+      className={cn(
+        'panel-slide flex h-full flex-none flex-col overflow-hidden bg-surface',
+        open ? 'w-[336px] border-l border-hairline' : 'w-0',
+      )}
+    >
+      <div className="flex h-full w-[336px] flex-none flex-col">
+        <div className="flex items-center gap-2.5 px-4 py-3">
+          {isElement && (
+            <button
+              type="button"
+              onClick={() => select({ kind: 'step' })}
+              aria-label="Adıma dön"
+              className="flex h-6 w-6 items-center justify-center rounded-md text-ink-faint hover:bg-surface-subtle hover:text-ink"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+          )}
+          <span className="flex h-8 w-8 flex-none items-center justify-center rounded-lg bg-accent-muted text-accent-strong">
+            {meta.icon}
+          </span>
+          <div className="min-w-0 leading-tight">
+            <div className="truncate text-[14.5px] font-bold text-ink">{meta.title}</div>
+            <div className="text-[11.5px] text-ink-faint">{meta.sub}</div>
+          </div>
+          <div className="flex-1" />
+          {selection.kind !== 'demo' && (
+            <button
+              type="button"
+              onClick={() => select({ kind: 'demo' })}
+              className="text-xs font-semibold text-accent-strong hover:underline"
+            >
+              Design
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onCollapse}
+            aria-label="Paneli gizle"
+            className="flex h-7 w-7 items-center justify-center rounded-md text-ink-faint hover:bg-surface-subtle hover:text-ink"
+          >
+            <PanelRightClose className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="h-px bg-hairline" />
+
+        <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-4">
+          {selection.kind === 'demo' && <DemoEditor />}
+          {selection.kind === 'step' && step && <StepEditor />}
+          {selection.kind === 'hotspot' && step?.hotspot && <HotspotEditor />}
+          {selection.kind === 'callout' && step?.callout && <CalloutEditor />}
+          {selection.kind === 'focus' && step?.focus && <FocusEditor />}
+          {selection.kind === 'overlay' && <OverlayEditor id={selection.id} />}
+        </div>
+      </div>
     </aside>
   );
 }
@@ -51,40 +133,8 @@ export function InspectorPanel() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="space-y-3 border-t border-hairline pt-4 first:border-0 first:pt-0">
-      <span className="text-[11px] font-semibold uppercase tracking-wide text-ink-faint">{title}</span>
+      <span className="t-eyebrow block">{title}</span>
       {children}
-    </div>
-  );
-}
-
-function Header() {
-  const selection = useEditorStore((s) => s.selection);
-  const stepIndex = useEditorStore((s) => s.stepIndex);
-  const select = useEditorStore((s) => s.select);
-  const titles: Record<string, string> = {
-    demo: 'Design',
-    step: `Adım ${stepIndex + 1}`,
-    hotspot: 'Hotspot',
-    callout: 'Callout',
-    focus: 'Focus',
-    overlay: 'Metin',
-  };
-  const isElement = ['hotspot', 'callout', 'focus', 'overlay'].includes(selection.kind);
-  return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        {isElement && (
-          <button type="button" onClick={() => select({ kind: 'step' })} aria-label="Adıma dön" className="text-ink-faint hover:text-ink">
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-        )}
-        <span className="text-sm font-semibold text-ink">{titles[selection.kind]}</span>
-      </div>
-      {selection.kind !== 'demo' && (
-        <button type="button" onClick={() => select({ kind: 'demo' })} className="text-xs text-ink-faint hover:text-accent">
-          Design
-        </button>
-      )}
     </div>
   );
 }
@@ -102,7 +152,7 @@ function DemoEditor() {
           <TextInput value={demo.title} onChange={setTitle} />
         </Field>
       </Section>
-      <Section title="Wrapper">
+      <Section title="Çerçeve">
         <div className="grid grid-cols-3 gap-2">
           {WRAPPERS.map((w) => (
             <button
@@ -128,8 +178,8 @@ function DemoEditor() {
               type="button"
               onClick={() => setBg(bg)}
               className={cn(
-                'h-7 w-7 rounded-lg border',
-                demo.defaultBackground === bg ? 'ring-2 ring-accent ring-offset-1' : 'border-hairline',
+                'h-7 w-7 rounded-lg border border-black/10',
+                demo.defaultBackground === bg && 'ring-2 ring-accent ring-offset-2 ring-offset-surface',
               )}
               style={{ background: bg }}
               aria-label={bg}
@@ -182,14 +232,14 @@ function StepEditor() {
         <button
           type="button"
           onClick={() => setStepBackground(undefined)}
-          className={cn('text-xs', inherited ? 'text-accent' : 'text-ink-faint hover:text-accent')}
+          className={cn('text-xs', inherited ? 'text-accent-strong' : 'text-ink-faint hover:text-accent')}
         >
           {inherited ? '✓ Demo arka planından miras' : 'Demo arka planına dön'}
         </button>
         <ApplyAllButton onClick={applyBackgroundToAll} label="Arka planı tümüne uygula" />
       </Section>
       <Section title="Öğeler">
-        <p className="text-xs text-ink-faint">Üstteki araç çubuğundan ekle; düzenlemek için seç:</p>
+        <p className="text-xs text-ink-faint">Alttaki dock'tan ekle; düzenlemek için seç:</p>
         <div className="space-y-1.5">
           {step.hotspot && <Row label="Hotspot" onClick={() => select({ kind: 'hotspot' })} />}
           {step.callout && <Row label={`Callout · ${step.callout.title ?? ''}`} onClick={() => select({ kind: 'callout' })} />}
@@ -291,9 +341,17 @@ function FocusEditor() {
         <Segmented<FocusEase> value={f.ease ?? 'gentle'} onChange={setEase} options={FOCUS_EASE_OPTIONS} />
       </Field>
       <ApplyAllButton onClick={applyEaseToAll} label="Geçişi tümüne uygula" />
-      <p className="font-mono text-xs text-ink-faint">
-        zoom {scale.toFixed(1)}× · {Math.round(f.w * 100)}×{Math.round(f.h * 100)}% — tuvalde dikdörtgeni taşı/boyutlandır
-      </p>
+      <div className="flex items-center gap-3 rounded-xl border border-hairline bg-surface-subtle p-3.5">
+        <span className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-accent-muted text-accent-strong">
+          <Crosshair className="h-5 w-5" />
+        </span>
+        <div>
+          <div className="t-mono text-[22px] font-bold leading-none text-ink">{scale.toFixed(1)}×</div>
+          <div className="mt-1 text-[11.5px] text-ink-faint">
+            Zoom · {Math.round(f.w * 100)}×{Math.round(f.h * 100)}% — tuvalde dikdörtgeni taşı/boyutlandır
+          </div>
+        </div>
+      </div>
       <RemoveButton label="Focus'u kaldır" onClick={remove} />
     </Section>
   );

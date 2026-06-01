@@ -32,6 +32,25 @@ describe('editor-store — immutable düzenleme', () => {
     expect(st().demo.steps.map((s) => s.order)).toEqual([1, 2]);
   });
 
+  it('reorderStep adımı taşır, order normalize olur, aktif adım kimliğiyle takip eder', () => {
+    useEditorStore.setState({
+      demo: {
+        ...structuredClone(base),
+        steps: [
+          { id: 'a', order: 1, type: 'screenshot', media: '/a.svg' },
+          { id: 'b', order: 2, type: 'screenshot', media: '/b.svg' },
+          { id: 'c', order: 3, type: 'screenshot', media: '/c.svg' },
+        ],
+      },
+      stepIndex: 0,
+      selection: { kind: 'step' },
+    });
+    st().reorderStep(0, 2); // 'a'yı sona taşı
+    expect(st().demo.steps.map((s) => s.id)).toEqual(['b', 'c', 'a']);
+    expect(st().demo.steps.map((s) => s.order)).toEqual([1, 2, 3]);
+    expect(st().stepIndex).toBe(2); // aktif 'a' yeni konumunda
+  });
+
   it('deleteStep siler, index sınırda kalır', () => {
     st().selectStep(1);
     st().deleteStep(1);

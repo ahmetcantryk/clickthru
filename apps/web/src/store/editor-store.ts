@@ -64,6 +64,8 @@ interface EditorState {
   toggleSkip: (i: number) => void;
   deleteStep: (i: number) => void;
   moveStep: (i: number, dir: -1 | 1) => void;
+  /** Sürükle-bırak: `from` adımını `to` konumuna taşır (aktif adım kimliğiyle takip edilir). */
+  reorderStep: (from: number, to: number) => void;
   setStepBackground: (c: string | undefined) => void;
 
   // "Tümüne uygula" — aktif adımdaki ilgili ayarı tüm adımlara yayar (dinamik: o anki değerler).
@@ -215,6 +217,19 @@ export const useEditorStore = create<EditorState>((set, get) => {
         steps[i] = b;
         steps[j] = a;
         return { demo: { ...st.demo, steps: normalize(steps) }, stepIndex: j };
+      }),
+
+    reorderStep: (from, to) =>
+      set((st) => {
+        const n = st.demo.steps.length;
+        if (from < 0 || from >= n || to < 0 || to >= n || from === to) return {};
+        const activeId = st.demo.steps[st.stepIndex]?.id;
+        const steps = [...st.demo.steps];
+        const [moved] = steps.splice(from, 1);
+        steps.splice(to, 0, moved);
+        const normalized = normalize(steps);
+        const idx = activeId ? normalized.findIndex((s) => s.id === activeId) : st.stepIndex;
+        return { demo: { ...st.demo, steps: normalized }, stepIndex: idx < 0 ? 0 : idx };
       }),
 
     setStepBackground: (c) => patchStep({ background: c }),

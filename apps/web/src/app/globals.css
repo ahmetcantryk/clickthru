@@ -2,9 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   Tema token'ları — cool-neutral editör paleti (oklch bileşenleri).
+   data-theme="light|dark" <html> üstünde. Tek kaynak: tailwind-preset.js
+   bu değişkenleri oklch(var(--x) / alpha) ile tüketir.
+   ============================================================ */
 @layer base {
-  :root {
+  :root,
+  [data-theme='light'] {
     color-scheme: light;
+    --bg: 0.955 0.004 264;
+    --pit: 0.915 0.005 264;
+    --panel: 0.995 0.001 264;
+    --panel-2: 0.975 0.003 264;
+    --panel-3: 0.955 0.004 264;
+    --elev: 1 0 0;
+    --line: 0.905 0.005 264;
+    --line-2: 0.845 0.006 264;
+    --text: 0.245 0.012 264;
+    --text-2: 0.475 0.01 264;
+    --text-3: 0.625 0.009 264;
+    --accent: 0.545 0.2 256;
+    --accent-2: 0.495 0.21 256;
+    --on-accent: 1 0 0;
+    --good: 0.55 0.15 158;
+    --bad: 0.55 0.21 24;
+    --warn: 0.62 0.15 70;
+    --shadow: 0 1px 2px rgba(20, 22, 28, 0.06), 0 10px 30px rgba(20, 22, 28, 0.1);
+    --shadow-sm: 0 1px 2px rgba(20, 22, 28, 0.07);
+  }
+
+  [data-theme='dark'] {
+    color-scheme: dark;
+    --bg: 0.165 0.008 264;
+    --pit: 0.125 0.006 264;
+    --panel: 0.205 0.008 264;
+    --panel-2: 0.238 0.009 264;
+    --panel-3: 0.275 0.01 264;
+    --elev: 0.262 0.01 264;
+    --line: 0.315 0.01 264;
+    --line-2: 0.4 0.012 264;
+    --text: 0.965 0.004 264;
+    --text-2: 0.745 0.008 264;
+    --text-3: 0.565 0.009 264;
+    --accent: 0.665 0.18 256;
+    --accent-2: 0.725 0.16 256;
+    --on-accent: 0.99 0 0;
+    --good: 0.74 0.15 158;
+    --bad: 0.665 0.19 24;
+    --warn: 0.8 0.13 78;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 28px rgba(0, 0, 0, 0.42);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
   }
 
   html,
@@ -14,13 +62,63 @@
 
   body {
     @apply bg-canvas text-ink antialiased;
+    letter-spacing: -0.006em;
+  }
+}
+
+@layer components {
+  /* JetBrains Mono — eyebrow & teknik etiketler (design system) */
+  .t-eyebrow {
+    font-family: var(--font-jetbrains), ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    @apply text-ink-faint;
+  }
+  .t-mono {
+    font-family: var(--font-jetbrains), ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Buton içi yükleniyor spinner'ı (design .spin). */
+  .spinner {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    animation: ct-spin 0.7s linear infinite;
+  }
+  @keyframes ct-spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 }
 
 @layer utilities {
-  /* Sahne reçetesinin "noise" katmanı (CLAUDE.md §6) — açık temada çok hafif grain. */
+  /* Sahne reçetesinin "noise" katmanı (CLAUDE.md §6) — çok hafif grain. */
   .bg-noise {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     background-size: 160px 160px;
+  }
+
+  /* Tuval kuyusu — pit zemini + ince nokta ızgarası (design ShotStage). */
+  .canvas-pit {
+    background-color: oklch(var(--pit));
+    background-image: radial-gradient(
+      circle,
+      oklch(var(--text-3) / 0.22) 1px,
+      transparent 1px
+    );
+    background-size: 26px 26px;
+  }
+
+  /* macOS tarzı yumuşak panel kayma geçişi. */
+  .panel-slide {
+    transition: width 0.32s cubic-bezier(0.4, 0.05, 0.2, 1),
+      opacity 0.22s ease, transform 0.32s cubic-bezier(0.4, 0.05, 0.2, 1);
   }
 }

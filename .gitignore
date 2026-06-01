@@ -23,3 +23,6 @@ coverage/
 npm-debug.log*
 .vscode/
 .idea/
+
+# archives (tasarım export'u vb. — repoya girmez)
+*.zip

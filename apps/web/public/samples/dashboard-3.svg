@@ -1,41 +1,114 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" font-family="Geist, Inter, system-ui, sans-serif">
-  <defs>
-    <linearGradient id="b3" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0D9488"/><stop offset="0.55" stop-color="#0D9488"/><stop offset="1" stop-color="#6D5BF5"/>
-    </linearGradient>
-  </defs>
-  <rect width="1280" height="720" fill="#FFFFFF"/>
-  <rect x="0" y="0" width="232" height="720" fill="#F6F7F9"/>
-  <line x1="232" y1="0" x2="232" y2="720" stroke="#0000000F"/>
-  <rect x="28" y="30" width="30" height="30" rx="9" fill="url(#b3)"/>
-  <text x="70" y="51" font-size="17" font-weight="600" fill="#0B0B12">Acme</text>
-  <text x="62" y="118" font-size="15" fill="#5B5B66">Panel</text>
-  <text x="62" y="166" font-size="15" fill="#5B5B66">Gelen kutusu</text>
-  <rect x="20" y="186" width="192" height="40" rx="11" fill="#0D948814"/>
-  <text x="62" y="214" font-size="15" font-weight="600" fill="#0D9488">Müşteriler</text>
-  <text x="62" y="262" font-size="15" fill="#5B5B66">Raporlar</text>
-  <text x="62" y="306" font-size="15" fill="#5B5B66">Ayarlar</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" font-family="'Hanken Grotesk', system-ui, sans-serif">
+  <rect width="1280" height="720" fill="#F7F8FB"/>
 
-  <text x="276" y="56" font-size="26" font-weight="700" fill="#0B0B12">Müşteriler</text>
-  <!-- arama (≈0.5,0.16) -->
-  <rect x="276" y="92" width="640" height="46" rx="12" fill="#FFFFFF" stroke="#00000014"/>
-  <text x="300" y="121" font-size="15" fill="#8A8A94">Müşteri ara…</text>
-  <rect x="1064" y="92" width="160" height="46" rx="12" fill="url(#b3)"/>
-  <text x="1144" y="121" font-size="15" font-weight="600" fill="#FFFFFF" text-anchor="middle">+ Ekle</text>
+  <!-- ============ SIDEBAR ============ -->
+  <rect x="0" y="0" width="232" height="720" fill="#FFFFFF"/>
+  <line x1="232" y1="0" x2="232" y2="720" stroke="#ECEEF3"/>
+  <rect x="28" y="28" width="34" height="34" rx="10" fill="#7C5CFC"/>
+  <text x="45" y="51" font-size="17" font-weight="800" fill="#FFFFFF" text-anchor="middle">A</text>
+  <text x="74" y="52" font-size="18" font-weight="700" fill="#1A1C24" letter-spacing="-0.4">Acme</text>
 
-  <!-- tablo -->
-  <rect x="276" y="166" width="948" height="500" rx="16" fill="#FFFFFF" stroke="#00000014"/>
-  <line x1="276" y1="214" x2="1224" y2="214" stroke="#0000000F"/>
-  <text x="300" y="197" font-size="13" font-weight="600" fill="#8A8A94">İsim</text>
-  <text x="700" y="197" font-size="13" font-weight="600" fill="#8A8A94">Plan</text>
-  <text x="1000" y="197" font-size="13" font-weight="600" fill="#8A8A94">Durum</text>
-  <g font-size="15" fill="#0B0B12">
-    <text x="300" y="260">Zeynep Kaya</text><text x="700" y="260" fill="#5B5B66">Pro</text><text x="1000" y="260" fill="#0D9488">Aktif</text>
-    <text x="300" y="312">Mehmet Demir</text><text x="700" y="312" fill="#5B5B66">Team</text><text x="1000" y="312" fill="#0D9488">Aktif</text>
-    <text x="300" y="364">Elif Şahin</text><text x="700" y="364" fill="#5B5B66">Free</text><text x="1000" y="364" fill="#8A8A94">Deneme</text>
-    <text x="300" y="416">Can Yılmaz</text><text x="700" y="416" fill="#5B5B66">Pro</text><text x="1000" y="416" fill="#0D9488">Aktif</text>
-    <text x="300" y="468">Aylin Arslan</text><text x="700" y="468" fill="#5B5B66">Team</text><text x="1000" y="468" fill="#8A8A94">Pasif</text>
+  <rect x="32" y="104" width="16" height="16" rx="5" fill="#DDE1EA"/>
+  <text x="62" y="118" font-size="14.5" fill="#5B6072">Panel</text>
+  <rect x="16" y="140" width="200" height="40" rx="11" fill="#F1ECFE"/>
+  <rect x="32" y="152" width="16" height="16" rx="5" fill="#7C5CFC"/>
+  <text x="62" y="166" font-size="14.5" font-weight="600" fill="#7C5CFC">Müşteriler</text>
+  <rect x="32" y="200" width="16" height="16" rx="5" fill="#DDE1EA"/>
+  <text x="62" y="214" font-size="14.5" fill="#5B6072">Raporlar</text>
+  <rect x="32" y="248" width="16" height="16" rx="5" fill="#DDE1EA"/>
+  <text x="62" y="262" font-size="14.5" fill="#5B6072">Gelen kutusu</text>
+  <rect x="32" y="296" width="16" height="16" rx="5" fill="#DDE1EA"/>
+  <text x="62" y="310" font-size="14.5" fill="#5B6072">Ayarlar</text>
+
+  <line x1="16" y1="636" x2="216" y2="636" stroke="#ECEEF3"/>
+  <circle cx="46" cy="672" r="17" fill="#F1ECFE"/>
+  <text x="46" y="677" font-size="12.5" font-weight="700" fill="#7C5CFC" text-anchor="middle">MD</text>
+  <text x="74" y="668" font-size="13" font-weight="600" fill="#1A1C24">Mira Demir</text>
+  <text x="74" y="686" font-size="11.5" fill="#9499AB">Sahip</text>
+
+  <!-- ============ HEADER ============ -->
+  <text x="276" y="66" font-size="28" font-weight="700" fill="#1A1C24" letter-spacing="-0.6">Müşteriler</text>
+
+  <!-- search (target 0.47,0.16) -->
+  <rect x="276" y="92" width="620" height="48" rx="12" fill="#FFFFFF" stroke="#E2E5EC"/>
+  <circle cx="304" cy="116" r="6.5" fill="none" stroke="#9499AB" stroke-width="2"/>
+  <line x1="309" y1="121" x2="314" y2="126" stroke="#9499AB" stroke-width="2" stroke-linecap="round"/>
+  <text x="326" y="121" font-size="14.5" fill="#9499AB">Müşteri ara…</text>
+  <rect x="984" y="92" width="240" height="48" rx="12" fill="#7C5CFC"/>
+  <text x="1104" y="122" font-size="15" font-weight="600" fill="#FFFFFF" text-anchor="middle">+  Müşteri ekle</text>
+
+  <!-- ============ ACCOUNTS TABLE ============ -->
+  <rect x="276" y="160" width="948" height="500" rx="16" fill="#FFFFFF" stroke="#ECEEF3"/>
+  <!-- header -->
+  <text x="336" y="192" font-size="11.5" font-weight="700" fill="#9499AB" letter-spacing="0.5">MÜŞTERİ</text>
+  <text x="720" y="192" font-size="11.5" font-weight="700" fill="#9499AB" letter-spacing="0.5">PLAN</text>
+  <text x="1000" y="192" font-size="11.5" font-weight="700" fill="#9499AB" letter-spacing="0.5" text-anchor="end">MRR</text>
+  <text x="1200" y="192" font-size="11.5" font-weight="700" fill="#9499AB" letter-spacing="0.5" text-anchor="end">SAĞLIK</text>
+  <line x1="276" y1="204" x2="1224" y2="204" stroke="#ECEEF3"/>
+
+  <!-- highlighted row 3 (~y 316–372, target 0.5,0.45) -->
+  <rect x="284" y="316" width="932" height="56" rx="10" fill="#F6F3FF"/>
+
+  <g font-size="14.5">
+    <!-- r1 Acme Corp -->
+    <circle cx="312" cy="232" r="16" fill="#F1ECFE"/><text x="312" y="237" font-size="11" font-weight="700" fill="#7C5CFC" text-anchor="middle">AC</text>
+    <text x="340" y="238" font-weight="600" fill="#1A1C24">Acme Corp</text>
+    <rect x="720" y="220" width="92" height="24" rx="7" fill="#EEF1F6"/><text x="766" y="237" font-size="12" font-weight="600" fill="#5B6072" text-anchor="middle">Enterprise</text>
+    <text x="1000" y="238" font-family="'JetBrains Mono', monospace" fill="#1A1C24" text-anchor="end">₺48.200</text>
+    <text x="1200" y="238" font-weight="600" fill="#2F9E6F" text-anchor="end">%94</text>
+    <line x1="300" y1="260" x2="1200" y2="260" stroke="#F1F2F6"/>
+
+    <!-- r2 Northwind -->
+    <circle cx="312" cy="288" r="16" fill="#F1ECFE"/><text x="312" y="293" font-size="11" font-weight="700" fill="#7C5CFC" text-anchor="middle">No</text>
+    <text x="340" y="294" font-weight="600" fill="#1A1C24">Northwind</text>
+    <rect x="720" y="276" width="72" height="24" rx="7" fill="#EEF1F6"/><text x="756" y="293" font-size="12" font-weight="600" fill="#5B6072" text-anchor="middle">Growth</text>
+    <text x="1000" y="294" font-family="'JetBrains Mono', monospace" fill="#1A1C24" text-anchor="end">₺22.540</text>
+    <text x="1200" y="294" font-weight="600" fill="#2F9E6F" text-anchor="end">%88</text>
+
+    <!-- r3 Loom Labs (highlighted) -->
+    <circle cx="312" cy="344" r="16" fill="#7C5CFC"/><text x="312" y="349" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">Lo</text>
+    <text x="340" y="350" font-weight="700" fill="#1A1C24">Loom Labs</text>
+    <rect x="720" y="332" width="72" height="24" rx="7" fill="#EDE7FE"/><text x="756" y="349" font-size="12" font-weight="600" fill="#7C5CFC" text-anchor="middle">Growth</text>
+    <text x="1000" y="350" font-family="'JetBrains Mono', monospace" fill="#1A1C24" text-anchor="end">₺19.300</text>
+    <text x="1200" y="350" font-weight="600" fill="#2F9E6F" text-anchor="end">%76</text>
+
+    <!-- r4 Vela Studio -->
+    <circle cx="312" cy="400" r="16" fill="#F1ECFE"/><text x="312" y="405" font-size="11" font-weight="700" fill="#7C5CFC" text-anchor="middle">Ve</text>
+    <text x="340" y="406" font-weight="600" fill="#1A1C24">Vela Studio</text>
+    <rect x="720" y="388" width="66" height="24" rx="7" fill="#EEF1F6"/><text x="753" y="405" font-size="12" font-weight="600" fill="#5B6072" text-anchor="middle">Starter</text>
+    <text x="1000" y="406" font-family="'JetBrains Mono', monospace" fill="#1A1C24" text-anchor="end">₺8.120</text>
+    <text x="1200" y="406" font-weight="600" fill="#C2820B" text-anchor="end">%63</text>
+    <line x1="300" y1="428" x2="1200" y2="428" stroke="#F1F2F6"/>
+
+    <!-- r5 Brightside -->
+    <circle cx="312" cy="456" r="16" fill="#F1ECFE"/><text x="312" y="461" font-size="11" font-weight="700" fill="#7C5CFC" text-anchor="middle">Br</text>
+    <text x="340" y="462" font-weight="600" fill="#1A1C24">Brightside</text>
+    <rect x="720" y="444" width="66" height="24" rx="7" fill="#EEF1F6"/><text x="753" y="461" font-size="12" font-weight="600" fill="#5B6072" text-anchor="middle">Starter</text>
+    <text x="1000" y="462" font-family="'JetBrains Mono', monospace" fill="#1A1C24" text-anchor="end">₺6.450</text>
+    <text x="1200" y="462" font-weight="600" fill="#E0654E" text-anchor="end">%51</text>
+    <line x1="300" y1="484" x2="1200" y2="484" stroke="#F1F2F6"/>
+
+    <!-- r6 Karbon -->
+    <circle cx="312" cy="512" r="16" fill="#F1ECFE"/><text x="312" y="517" font-size="11" font-weight="700" fill="#7C5CFC" text-anchor="middle">Ka</text>
+    <text x="340" y="518" font-weight="600" fill="#1A1C24">Karbon</text>
+    <rect x="720" y="500" width="72" height="24" rx="7" fill="#EEF1F6"/><text x="756" y="517" font-size="12" font-weight="600" fill="#5B6072" text-anchor="middle">Growth</text>
+    <text x="1000" y="518" font-family="'JetBrains Mono', monospace" fill="#1A1C24" text-anchor="end">₺14.900</text>
+    <text x="1200" y="518" font-weight="600" fill="#2F9E6F" text-anchor="end">%81</text>
+    <line x1="300" y1="540" x2="1200" y2="540" stroke="#F1F2F6"/>
+
+    <!-- r7 Pixel -->
+    <circle cx="312" cy="568" r="16" fill="#F1ECFE"/><text x="312" y="573" font-size="11" font-weight="700" fill="#7C5CFC" text-anchor="middle">Pi</text>
+    <text x="340" y="574" font-weight="600" fill="#1A1C24">Pixel A.Ş.</text>
+    <rect x="720" y="556" width="92" height="24" rx="7" fill="#EEF1F6"/><text x="766" y="573" font-size="12" font-weight="600" fill="#5B6072" text-anchor="middle">Enterprise</text>
+    <text x="1000" y="574" font-family="'JetBrains Mono', monospace" fill="#1A1C24" text-anchor="end">₺37.700</text>
+    <text x="1200" y="574" font-weight="600" fill="#2F9E6F" text-anchor="end">%90</text>
+    <line x1="300" y1="600" x2="1200" y2="600" stroke="#F1F2F6"/>
+
+    <!-- r8 Vega -->
+    <circle cx="312" cy="624" r="16" fill="#F1ECFE"/><text x="312" y="629" font-size="11" font-weight="700" fill="#7C5CFC" text-anchor="middle">Vg</text>
+    <text x="340" y="630" font-weight="600" fill="#1A1C24">Vega Co.</text>
+    <rect x="720" y="612" width="66" height="24" rx="7" fill="#EEF1F6"/><text x="753" y="629" font-size="12" font-weight="600" fill="#5B6072" text-anchor="middle">Starter</text>
+    <text x="1000" y="630" font-family="'JetBrains Mono', monospace" fill="#1A1C24" text-anchor="end">₺5.900</text>
+    <text x="1200" y="630" font-weight="600" fill="#C2820B" text-anchor="end">%58</text>
   </g>
-  <!-- vurgulu satır ≈ y0.45 (324) -->
-  <rect x="284" y="288" width="932" height="44" rx="10" fill="#0D94880D"/>
 </svg>

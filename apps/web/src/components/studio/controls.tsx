@@ -77,14 +77,14 @@ export function ColorSwatches({
           type="button"
           onClick={() => onChange(c)}
           className={cn(
-            'h-6 w-6 rounded-full border',
-            value?.toLowerCase() === c.toLowerCase() ? 'ring-2 ring-accent ring-offset-1' : 'border-hairline',
+            'h-6 w-6 rounded-md border border-black/10 transition-transform hover:scale-110',
+            value?.toLowerCase() === c.toLowerCase() && 'ring-2 ring-accent ring-offset-2 ring-offset-surface',
           )}
           style={{ background: c }}
           aria-label={c}
         />
       ))}
-      <label className="relative h-6 w-6 cursor-pointer overflow-hidden rounded-full border border-hairline">
+      <label className="relative h-6 w-6 cursor-pointer overflow-hidden rounded-md border border-hairline">
         <span className="absolute inset-0 bg-[conic-gradient(from_0deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)]" />
         <input
           type="color"

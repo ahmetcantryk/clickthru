@@ -11,7 +11,7 @@ export default async function PlayPage({ params }: { params: Promise<{ demoId: s
 
   if (!demo) {
     return (
-      <main className="flex h-screen flex-col items-center justify-center gap-3 bg-surface-subtle p-6 text-center">
+      <main className="flex h-screen flex-col items-center justify-center gap-3 bg-canvas p-6 text-center">
         <p className="text-sm font-semibold text-ink">Demo bulunamadı</p>
         <p className="text-xs text-ink-muted">“{demoId}” için kayıtlı bir demo yok.</p>
         <Link href="/studio" className="text-xs font-medium text-accent hover:underline">
@@ -22,8 +22,8 @@ export default async function PlayPage({ params }: { params: Promise<{ demoId: s
   }
 
   return (
-    <main className="h-screen bg-surface-subtle p-6">
-      <div className="mx-auto flex h-full max-w-6xl flex-col">
+    <main className="h-screen bg-canvas p-4">
+      <div className="mx-auto h-full w-full max-w-6xl">
         <Player demo={demo} />
       </div>
     </main>

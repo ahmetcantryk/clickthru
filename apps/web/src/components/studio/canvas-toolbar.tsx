@@ -5,7 +5,7 @@ import { Crosshair, MessageSquare, MousePointerClick, Trash2, Type } from 'lucid
 import { cn } from '@clickthru/ui';
 import { useEditorStore } from '@/store/editor-store';
 
-function ToolBtn({
+function DockButton({
   icon,
   label,
   onClick,
@@ -23,19 +23,19 @@ function ToolBtn({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      title={label}
+      title={disabled ? `${label} zaten ekli` : `${label} ekle`}
       className={cn(
-        'flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-medium transition-colors disabled:opacity-30',
-        danger ? 'text-red-500 hover:bg-red-500/10' : 'text-ink-muted hover:bg-accent-muted hover:text-accent',
+        'flex flex-col items-center gap-1 rounded-xl px-3 pb-1.5 pt-2 transition-colors disabled:cursor-not-allowed disabled:opacity-30',
+        danger ? 'text-danger hover:bg-danger-soft' : 'text-ink-muted hover:bg-accent-muted hover:text-accent',
       )}
     >
       {icon}
-      <span className="hidden sm:inline">{label}</span>
+      <span className="text-[10.5px] font-semibold">{label}</span>
     </button>
   );
 }
 
-/** Tuval üstü araç çubuğu — öğeleri kolayca ekle/yönet (ikonlu). */
+/** Tuval altında yüzen ekleme dock'u — öğeleri ekle/sil (design AddDock). */
 export function CanvasToolbar() {
   const step = useEditorStore((s) => s.demo.steps[s.stepIndex]);
   const total = useEditorStore((s) => s.demo.steps.length);
@@ -43,34 +43,41 @@ export function CanvasToolbar() {
   const s = useEditorStore();
 
   return (
-    <div className="flex items-center gap-1 self-center rounded-2xl border border-hairline bg-surface p-1.5 shadow-soft">
-      <ToolBtn
-        icon={<MousePointerClick className="h-4 w-4" />}
-        label="Hotspot"
-        onClick={s.addHotspot}
-        disabled={!step || !!step.hotspot}
-      />
-      <ToolBtn
-        icon={<MessageSquare className="h-4 w-4" />}
-        label="Callout"
-        onClick={s.addCallout}
-        disabled={!step || !!step.callout}
-      />
-      <ToolBtn icon={<Type className="h-4 w-4" />} label="Metin" onClick={s.addOverlay} disabled={!step} />
-      <ToolBtn
-        icon={<Crosshair className="h-4 w-4" />}
-        label="Focus"
-        onClick={s.addFocus}
-        disabled={!step || !!step.focus}
-      />
-      <div className="mx-1 h-5 w-px bg-hairline" />
-      <ToolBtn
-        icon={<Trash2 className="h-4 w-4" />}
-        label="Adımı sil"
-        onClick={() => s.deleteStep(stepIndex)}
-        disabled={total === 0}
-        danger
-      />
+    <div className="pointer-events-none absolute bottom-6 left-1/2 z-10 -translate-x-1/2">
+      <div className="pointer-events-auto flex items-center gap-1 rounded-2xl border border-hairline bg-surface-elevated p-1.5 shadow-soft">
+        <DockButton
+          icon={<MousePointerClick className="h-[18px] w-[18px]" />}
+          label="Hotspot"
+          onClick={s.addHotspot}
+          disabled={!step || !!step.hotspot}
+        />
+        <DockButton
+          icon={<MessageSquare className="h-[18px] w-[18px]" />}
+          label="Callout"
+          onClick={s.addCallout}
+          disabled={!step || !!step.callout}
+        />
+        <DockButton
+          icon={<Type className="h-[18px] w-[18px]" />}
+          label="Metin"
+          onClick={s.addOverlay}
+          disabled={!step}
+        />
+        <DockButton
+          icon={<Crosshair className="h-[18px] w-[18px]" />}
+          label="Focus"
+          onClick={s.addFocus}
+          disabled={!step || !!step.focus}
+        />
+        <span className="mx-1 h-9 w-px bg-hairline" />
+        <DockButton
+          icon={<Trash2 className="h-[18px] w-[18px]" />}
+          label="Sil"
+          onClick={() => s.deleteStep(stepIndex)}
+          disabled={total === 0}
+          danger
+        />
+      </div>
     </div>
   );
 }

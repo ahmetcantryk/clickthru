@@ -188,7 +188,7 @@ export function RemoveButton({ onClick, label }: { onClick: () => void; label: s
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-center justify-center gap-2 rounded-lg border border-hairline py-2 text-sm text-red-500 hover:bg-red-500/5"
+      className="flex w-full items-center justify-center gap-2 rounded-lg border border-hairline py-2 text-sm text-danger transition-colors hover:border-transparent hover:bg-danger-soft"
     >
       {label}
     </button>
