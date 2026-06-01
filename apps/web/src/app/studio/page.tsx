@@ -1,10 +1,15 @@
 import { Studio } from '@/components/studio/studio';
-import { getDemo } from '@/lib/demos';
+import { getDemo, blankDemo } from '@/lib/demos';
+import { AuthGate } from '@/lib/auth';
 
-// Faz 1 odak ekranı — editör (Kapı 3). `?demo=id` ile kaydedilmiş demo yüklenir.
-export default async function StudioPage({ searchParams }: { searchParams: Promise<{ demo?: string }> }) {
-  const { demo: demoId } = await searchParams;
-  const initialDemo = demoId ? await getDemo(demoId).catch(() => null) : null;
+// Editör (Kapı 3) — oturum gerektirir. `?demo=id` kayıtlı demoyu, `?new=1` boş demoyu açar.
+export default async function StudioPage({ searchParams }: { searchParams: Promise<{ demo?: string; new?: string }> }) {
+  const { demo: demoId, new: isNew } = await searchParams;
+  const initialDemo = isNew ? blankDemo() : demoId ? await getDemo(demoId).catch(() => null) : null;
 
-  return <Studio initialDemo={initialDemo ?? undefined} />;
+  return (
+    <AuthGate>
+      <Studio initialDemo={initialDemo ?? undefined} />
+    </AuthGate>
+  );
 }

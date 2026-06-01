@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Logo, Reveal, ThemeToggle, LangToggle } from './bits';
 import { useLang } from './i18n';
 import { LivePlayer, HERO_GEO, SHOWCASE_GEO } from './live-player';
-import { CaptureDemo, CameraDemo, StudioMiniDemo, ProgressDemo, StageDemo, ShareDemo } from './demos';
+import { CaptureDemo, CameraDemo, StudioMiniDemo, ProgressDemo, StageDemo, ShareDemo, HowVisual } from './demos';
 
 type Theme = 'light' | 'dark';
 type ThemeProps = { theme: Theme; setTheme: (t: Theme) => void };
@@ -39,8 +39,8 @@ export function Nav({ theme, setTheme }: ThemeProps) {
         <div className="ct-nav__right">
           <LangToggle lang={lang} setLang={setLang} />
           <ThemeToggle theme={theme} setTheme={setTheme} />
-          <a className="ct-btn ct-btn--ghost ct-btn--sm ct-nav__hideSm" href="/studio">{t.nav.login}</a>
-          <a className="ct-btn ct-btn--primary ct-btn--sm" href="/studio">{t.nav.start}</a>
+          <a className="ct-btn ct-btn--ghost ct-btn--sm ct-nav__hideSm" href="/login">{t.nav.login}</a>
+          <a className="ct-btn ct-btn--primary ct-btn--sm" href="/login">{t.nav.start}</a>
         </div>
       </div>
     </nav>
@@ -60,7 +60,7 @@ export function Hero() {
             <Reveal tag="h1" className="ct-h1" delay={1}>{t.hero.title}</Reveal>
             <Reveal tag="p" className="ct-lead" delay={2} style={{ maxWidth: 480 }}>{t.hero.lead}</Reveal>
             <Reveal className="ct-hero__cta" delay={3}>
-              <a className="ct-btn ct-btn--primary ct-btn--lg" href="/studio">{t.hero.ctaPrimary}<Arrow /></a>
+              <a className="ct-btn ct-btn--primary ct-btn--lg" href="/login">{t.hero.ctaPrimary}<Arrow /></a>
               <a className="ct-btn ct-btn--ghost ct-btn--lg" href="#showcase"><PlayIc />{t.hero.ctaSecondary}</a>
             </Reveal>
             <Reveal className="ct-hero__trust" delay={4}>
@@ -69,7 +69,7 @@ export function Hero() {
             </Reveal>
           </div>
           <Reveal className="" delay={2}>
-            <LivePlayer geo={HERO_GEO} copy={t.heroSteps} auto tag={t.player.auto} />
+            <LivePlayer geo={HERO_GEO} copy={t.heroSteps} auto />
           </Reveal>
         </div>
       </div>
@@ -83,8 +83,8 @@ export function SocialProof() {
   return (
     <section className="ct-section ct-section--tight">
       <div className="ct-wrap">
-        <Reveal className="ct-center" style={{ marginBottom: 40 }}>
-          <div className="ct-h3" style={{ fontWeight: 700, color: 'var(--text)', maxWidth: 640, margin: '0 auto', lineHeight: 1.3 }}>{t.proof.headline}</div>
+        <Reveal className="ct-center" style={{ marginBottom: 28 }}>
+          <span className="ct-eyebrow">{t.proof.eyebrow}</span>
         </Reveal>
         <div className="ct-stats">
           {t.proof.stats.map((s, i) => (
@@ -102,8 +102,6 @@ export function SocialProof() {
 /* ============ HOW IT WORKS ============ */
 export function HowItWorks() {
   const { t } = useLang();
-  const demos = [<CaptureDemo key="c" />, <StudioMiniDemo key="s" />, <ShareDemo key="sh" />];
-  const fills = ['33%', '66%', '100%'];
   return (
     <section className="ct-section" id="how">
       <div className="ct-wrap">
@@ -114,14 +112,13 @@ export function HowItWorks() {
         </div>
         <div className="ct-steps">
           {t.how.steps.map((s, i) => (
-            <Reveal key={s.n} className="ct-stepcard in" delay={(i + 1) as 1 | 2 | 3} style={{ '--fill': fills[i] } as React.CSSProperties}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Reveal key={s.n} className="ct-stepcard" delay={(i + 1) as 1 | 2 | 3}>
+              <div className="ct-stepcard__visual"><HowVisual step={i} /></div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span className="ct-stepcard__n">{s.n}</span>
-                <span className="ct-h3" style={{ fontSize: 20 }}>{s.title}</span>
+                <span className="ct-h3" style={{ fontSize: 19 }}>{s.title}</span>
               </div>
-              <p className="ct-body" style={{ minHeight: 46 }}>{s.body}</p>
-              <div className="ct-stepcard__demo" style={{ padding: 14 }}>{demos[i]}</div>
-              <div className="ct-stepcard__bar"><i /></div>
+              <p className="ct-body">{s.body}</p>
             </Reveal>
           ))}
         </div>
@@ -189,7 +186,7 @@ export function ExportBand() {
               <span className="ct-eyebrow" style={{ color: 'oklch(0.78 0.15 256)' }}>{e.eyebrow}</span>
               <h2 className="ct-h2" style={{ color: '#fff' }}>{e.title}</h2>
               <p className="ct-body" style={{ color: 'oklch(0.8 0.01 264)' }}>{e.body}</p>
-              <a className="ct-btn ct-btn--primary" href="/studio">{e.cta}<Arrow /></a>
+              <a className="ct-btn ct-btn--primary" href="/login">{e.cta}<Arrow /></a>
             </div>
             <div className="ct-fmts">
               {e.fmts.map((m) => (
@@ -215,10 +212,10 @@ export function Showcase() {
           <Reveal tag="p" className="ct-lead" delay={2}>{t.showcase.lead}</Reveal>
         </div>
         <Reveal style={{ maxWidth: 980, margin: '0 auto' }}>
-          <LivePlayer geo={SHOWCASE_GEO} copy={t.showcaseSteps} auto={false} startPlaying={false} tag={t.player.interactive} />
+          <LivePlayer geo={SHOWCASE_GEO} copy={t.showcaseSteps} auto={false} startPlaying={false} />
         </Reveal>
         <Reveal className="ct-center" delay={2} style={{ marginTop: 36 }}>
-          <a className="ct-btn ct-btn--primary ct-btn--lg" href="/studio">{t.showcase.cta}<Arrow /></a>
+          <a className="ct-btn ct-btn--primary ct-btn--lg" href="/login">{t.showcase.cta}<Arrow /></a>
         </Reveal>
       </div>
     </section>
@@ -289,7 +286,7 @@ export function Pricing() {
               {plan.pop && <span className="ct-price__badge">{p.badge}</span>}
               <div className="ct-price__name">{plan.name}</div>
               <div className="ct-price__amt">{plan.price} <span className="per">{plan.per}</span></div>
-              <a className={`ct-btn ${plan.pop ? 'ct-btn--primary' : 'ct-btn--ghost'} ct-btn--block`} href="/studio">{plan.cta}</a>
+              <a className={`ct-btn ${plan.pop ? 'ct-btn--primary' : 'ct-btn--ghost'} ct-btn--block`} href="/login">{plan.cta}</a>
               <div className="ct-price__feats">
                 {plan.feats.map((ft, k) => (
                   <div key={k} className={`ct-price__feat ${ft.off ? 'off' : ''}`}>
@@ -356,7 +353,7 @@ export function ClosingCTA() {
           <h2 className="ct-h2" style={{ maxWidth: 620 }}>{t.closing.title}</h2>
           <p className="ct-lead" style={{ maxWidth: 480 }}>{t.closing.lead}</p>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <a className="ct-btn ct-btn--primary ct-btn--lg" href="/studio">{t.closing.ctaPrimary}<Arrow /></a>
+            <a className="ct-btn ct-btn--primary ct-btn--lg" href="/login">{t.closing.ctaPrimary}<Arrow /></a>
             <a className="ct-btn ct-btn--ghost ct-btn--lg" href="#showcase"><PlayIc />{t.closing.ctaSecondary}</a>
           </div>
         </Reveal>

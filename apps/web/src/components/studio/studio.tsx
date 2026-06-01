@@ -64,7 +64,9 @@ export function Studio({ initialDemo }: { initialDemo?: Demo }) {
     <div className="flex h-screen flex-col bg-canvas">
       <header className="z-20 flex h-14 flex-none items-center gap-3 border-b border-hairline bg-surface px-4">
         <PanelToggle side="left" open={leftOpen} onClick={() => setLeftOpen((v) => !v)} />
-        <Logo />
+        <a href="/workspaces" title="Çalışma alanına dön" className="rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-accent-ring">
+          <Logo />
+        </a>
         <span className="h-5 w-px bg-hairline" />
         <button
           type="button"

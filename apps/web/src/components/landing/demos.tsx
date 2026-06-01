@@ -24,6 +24,39 @@ function Screen({ variant = 'overview', w }: { variant?: ScreenVariant; w: numbe
   );
 }
 
+/** "Nasıl çalışır" için sakin, tek-motifli, eşit-boy çerçeveli görsel (canlı demo değil). */
+export function HowVisual({ step }: { step: number }) {
+  const { t } = useLang();
+  const variant = (['overview', 'reports', 'customers'] as ScreenVariant[])[step] ?? 'overview';
+  return (
+    <FrameWrapper variant="browser">
+      <div style={{ position: 'relative', aspectRatio: '1280/720', overflow: 'hidden', background: '#fff' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={SVG[variant]} alt="" draggable={false} style={{ display: 'block', width: '100%', height: '100%' }} />
+        {step === 0 && (
+          <>
+            <span style={{ position: 'absolute', top: '8%', left: '50%', transform: 'translateX(-50%)', display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(12,14,20,.86)', color: '#fff', fontFamily: 'var(--mono)', fontSize: 11, fontWeight: 600, padding: '5px 10px', borderRadius: 999 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'oklch(0.66 0.2 24)' }} />REC
+            </span>
+            <div style={{ position: 'absolute', left: '80%', top: '22%', transform: 'translate(-50%,-50%)' }}><Hotspot size={20} /></div>
+          </>
+        )}
+        {step === 1 && (
+          <div style={{ position: 'absolute', left: '34%', top: '46%', transform: 'translate(-50%,-50%)' }}>
+            <Callout title={t.how.motif} arrow="none" w={150} />
+          </div>
+        )}
+        {step === 2 && (
+          <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)', display: 'flex', gap: 7, alignItems: 'center', background: '#fff', borderRadius: 12, boxShadow: '0 14px 32px rgba(20,22,60,.2)', border: '1px solid rgba(15,18,40,.08)', padding: '8px 9px 8px 12px' }}>
+            <span style={{ fontFamily: 'var(--mono)', fontSize: 11.5, color: '#5b6072' }}>clickthru.app/play/acme</span>
+            <span style={{ background: 'var(--accent)', color: 'var(--on-accent)', fontSize: 11, fontWeight: 700, padding: '5px 10px', borderRadius: 8 }}>{t.demo.copy}</span>
+          </div>
+        )}
+      </div>
+    </FrameWrapper>
+  );
+}
+
 /* ============ 1. CAPTURE ============ */
 export function CaptureDemo() {
   const { t } = useLang();

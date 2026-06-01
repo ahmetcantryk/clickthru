@@ -16,6 +16,7 @@ const tr = {
     trust2: '60 saniyede ilk demon',
   },
   proof: {
+    eyebrow: 'NEDEN CLICKTHRU',
     headline: 'Sinematik zoom kalitesi ve esnek format — tek araçta, adil fiyatla.',
     stats: [
       { n: '60', u: 'sn', l: 'ilk demoya kadar' },
@@ -27,6 +28,7 @@ const tr = {
     eyebrow: 'NASIL ÇALIŞIR',
     title: 'Üç adımda canlı bir demo',
     lead: 'Kaydından paylaşılabilir linke — arada ne kod var, ne karmaşık video editörü.',
+    motif: 'Yeni rapor',
     steps: [
       { n: '01', title: 'Kaydet', body: 'Chrome uzantısını aç, kaydı başlat. Her tıklaman bir adım olur.' },
       { n: '02', title: 'Düzenle', body: 'Studio’da callout, hotspot, zoom ve metin ekle. Her şey sürükle-bırak.' },
@@ -196,6 +198,7 @@ const en: Copy = {
     trust2: 'First demo in 60 seconds',
   },
   proof: {
+    eyebrow: 'WHY CLICKTHRU',
     headline: 'Cinematic zoom quality and flexible formats — one tool, fair pricing.',
     stats: [
       { n: '60', u: 's', l: 'to your first demo' },
@@ -207,6 +210,7 @@ const en: Copy = {
     eyebrow: 'HOW IT WORKS',
     title: 'A live demo in three steps',
     lead: 'From capture to a shareable link — no code, no complex video editor in between.',
+    motif: 'New report',
     steps: [
       { n: '01', title: 'Record', body: 'Open the Chrome extension and start recording. Every click becomes a step.' },
       { n: '02', title: 'Edit', body: 'Add callouts, hotspots, zoom and text in Studio. Everything is drag-and-drop.' },

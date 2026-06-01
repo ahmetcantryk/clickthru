@@ -82,6 +82,18 @@
     font-variant-numeric: tabular-nums;
   }
 
+  /* Hafif giriş animasyonu (workspaces / modal). */
+  @keyframes fadein {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
   /* Buton içi yükleniyor spinner'ı (design .spin). */
   .spinner {
     width: 14px;

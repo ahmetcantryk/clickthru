@@ -184,16 +184,16 @@ export function Callout({ title, body, arrow = 'none', w = 252 }: { title: strin
 
 /** Browser / dark / none çerçeve (StageDemo + framed görseller). Daima açık ürün görünümü. */
 export function FrameWrapper({ variant = 'browser', children }: { variant?: 'browser' | 'dark' | 'none'; children: React.ReactNode }) {
-  if (variant === 'none') return <div style={{ borderRadius: 12, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,.2)' }}>{children}</div>;
+  if (variant === 'none') return <div style={{ borderRadius: 14, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,.2)' }}>{children}</div>;
   if (variant === 'dark') {
     return (
-      <div style={{ background: '#18181f', borderRadius: 16, padding: 10, boxShadow: '0 24px 60px rgba(0,0,0,.4)' }}>
-        <div style={{ borderRadius: 10, overflow: 'hidden' }}>{children}</div>
+      <div style={{ background: '#18181f', borderRadius: 18, padding: 10, boxShadow: '0 24px 60px rgba(0,0,0,.4)' }}>
+        <div style={{ borderRadius: 12, overflow: 'hidden' }}>{children}</div>
       </div>
     );
   }
   return (
-    <div style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', boxShadow: '0 24px 60px rgba(20,22,28,.22), 0 2px 8px rgba(20,22,28,.1)', border: '1px solid #e8e9ef' }}>
+    <div style={{ background: '#fff', borderRadius: 14, overflow: 'hidden', boxShadow: '0 24px 60px rgba(20,22,28,.22), 0 2px 8px rgba(20,22,28,.1)', border: '1px solid #e8e9ef' }}>
       <div style={{ height: 38, background: '#f4f5f8', borderBottom: '1px solid #e7e9ef', display: 'flex', alignItems: 'center', padding: '0 13px', gap: 7 }}>
         {['#ff5f57', '#febc2e', '#28c840'].map((c) => (
           <span key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />

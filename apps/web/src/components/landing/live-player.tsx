@@ -69,13 +69,11 @@ export function LivePlayer({
   copy,
   auto = true,
   startPlaying,
-  tag,
 }: {
   geo: GeoStep[];
   copy: { title: string; body?: string }[];
   auto?: boolean;
   startPlaying?: boolean;
-  tag: string;
 }) {
   const [idx, setIdx] = React.useState(0);
   const [prog, setProg] = React.useState(0);
@@ -124,11 +122,6 @@ export function LivePlayer({
 
   return (
     <div className="ct-stage" style={{ padding: 'clamp(18px,3.5%,36px)', paddingBottom: 'clamp(74px,11%,92px)' }}>
-      <div className="ct-stage__tag">
-        <span className="ct-livepulse" />
-        {tag}
-      </div>
-
       <FrameWrapper variant="browser">
         <div style={{ position: 'relative', aspectRatio: `${SW} / ${SH}`, overflow: 'hidden', background: '#fff' }}>
           <div style={{ position: 'absolute', inset: 0, transformOrigin: '0 0', transform: camTransform, transition: glide }}>
