@@ -1,6 +1,7 @@
-import { redirect } from 'next/navigation';
+import './landing.css';
+import { LandingApp } from '@/components/landing/landing-app';
 
-// Landing page yok — kök doğrudan studio'ya gider (CLAUDE.md Faz 1 odak: studio).
+// Kök = pazarlama landing sayfası (dark/light + TR/EN, kendi-içinde; studio'dan bağımsız).
 export default function Home() {
-  redirect('/studio');
+  return <LandingApp />;
 }
