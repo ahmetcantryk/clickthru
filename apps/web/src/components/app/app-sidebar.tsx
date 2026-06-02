@@ -4,6 +4,7 @@ import {
   BookOpen,
   ChevronsUpDown,
   CreditCard,
+  Globe,
   Home,
   LogOut,
   Moon,
@@ -18,6 +19,7 @@ import {
 import { cn } from '@clickthru/ui';
 import { initials } from '@/lib/auth';
 import { useTheme } from '@/lib/theme';
+import { useT } from '@/lib/i18n';
 import { DropdownMenu, type MenuItem } from '@/components/ui/menu';
 
 export type AppSection = 'home' | 'library' | 'insights' | 'settings';
@@ -26,12 +28,6 @@ interface ChecklistItem {
   label: string;
   done: boolean;
 }
-
-const NAV: { key: AppSection; label: string; href: string; icon: React.ReactNode }[] = [
-  { key: 'home', label: 'Ana sayfa', href: '/workspaces', icon: <Home className="h-4 w-4" /> },
-  { key: 'library', label: 'Kitaplık', href: '/library', icon: <BookOpen className="h-4 w-4" /> },
-  { key: 'insights', label: 'İçgörüler', href: '/insights', icon: <Sparkles className="h-4 w-4" /> },
-];
 
 export function AppSidebar({
   active,
@@ -55,43 +51,43 @@ export function AppSidebar({
   onSignOut: () => void;
 }) {
   const { theme, toggle } = useTheme();
+  const { t, lang, setLang } = useT();
   const dark = theme === 'dark';
 
+  const nav: { key: AppSection; label: string; href: string; icon: React.ReactNode }[] = [
+    { key: 'home', label: t.nav.home, href: '/workspaces', icon: <Home className="h-4 w-4" /> },
+    { key: 'library', label: t.nav.library, href: '/library', icon: <BookOpen className="h-4 w-4" /> },
+    { key: 'insights', label: t.nav.insights, href: '/insights', icon: <Sparkles className="h-4 w-4" /> },
+  ];
+
   const accountItems: MenuItem[] = [
-    { label: 'Hesap ayarları', icon: <Settings className="h-4 w-4" />, href: '/settings' },
-    { label: 'Faturalandırma', icon: <CreditCard className="h-4 w-4" />, href: '/settings?tab=plan' },
-    { label: dark ? 'Açık tema' : 'Koyu tema', icon: dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />, onSelect: toggle },
-    { label: 'Çöp kutusu', icon: <Trash2 className="h-4 w-4" />, href: '/library' },
+    { label: t.account.settings, icon: <Settings className="h-4 w-4" />, href: '/settings' },
+    { label: t.account.billing, icon: <CreditCard className="h-4 w-4" />, href: '/settings?tab=plan' },
+    { label: dark ? t.account.toLight : t.account.toDark, icon: dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />, onSelect: toggle },
+    { label: t.account.language, icon: <Globe className="h-4 w-4" />, onSelect: () => setLang(lang === 'en' ? 'tr' : 'en') },
+    { label: t.account.trash, icon: <Trash2 className="h-4 w-4" />, href: '/library' },
     { kind: 'separator' },
-    { label: 'Çıkış yap', icon: <LogOut className="h-4 w-4" />, danger: true, onSelect: onSignOut },
+    { label: t.account.signOut, icon: <LogOut className="h-4 w-4" />, danger: true, onSelect: onSignOut },
   ];
 
   const wsItems: MenuItem[] = [
-    { label: 'Çalışma alanı ayarları', icon: <Settings className="h-4 w-4" />, href: '/settings' },
-    { label: 'Ekip davet et', icon: <Users className="h-4 w-4" />, onSelect: () => { window.location.href = 'mailto:?subject=clickthru ekibine katıl'; } },
+    { label: t.account.wsSettings, icon: <Settings className="h-4 w-4" />, href: '/settings' },
+    { label: t.account.invite, icon: <Users className="h-4 w-4" />, onSelect: () => { window.location.href = 'mailto:?subject=clickthru'; } },
   ];
 
   return (
     <aside className="flex h-screen w-[252px] flex-none flex-col border-r border-hairline bg-surface">
-      {/* workspace switcher */}
       <div className="p-3">
         <DropdownMenu
           width={224}
-          header={
-            <div>
-              <div className="text-[13px] font-semibold text-ink">{workspace}</div>
-              <div className="text-[11px] text-ink-faint">Free plan</div>
-            </div>
-          }
+          header={<div><div className="text-[13px] font-semibold text-ink">{workspace}</div><div className="text-[11px] text-ink-faint">{t.nav.free}</div></div>}
           items={wsItems}
           trigger={
             <span className="flex items-center gap-2.5 rounded-xl px-2.5 py-2 transition-colors hover:bg-surface-subtle">
-              <span className="flex h-8 w-8 flex-none items-center justify-center rounded-lg text-[13px] font-bold text-white" style={{ background: brandColor }}>
-                {workspace.charAt(0).toUpperCase() || 'C'}
-              </span>
+              <span className="flex h-8 w-8 flex-none items-center justify-center rounded-lg text-[13px] font-bold text-white" style={{ background: brandColor }}>{workspace.charAt(0).toUpperCase() || 'C'}</span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[13.5px] font-semibold text-ink">{workspace}</span>
-                <span className="block truncate text-[11.5px] text-ink-faint">Free plan</span>
+                <span className="block truncate text-[11.5px] text-ink-faint">{t.nav.free}</span>
               </span>
               <ChevronsUpDown className="h-4 w-4 flex-none text-ink-faint" />
             </span>
@@ -101,21 +97,14 @@ export function AppSidebar({
 
       <div className="px-3">
         <button type="button" onClick={onSearch} className="flex w-full items-center gap-2.5 rounded-lg border border-hairline bg-surface-subtle px-3 py-2 text-sm text-ink-faint transition-colors hover:border-hairline-strong hover:text-ink">
-          <Search className="h-4 w-4" /> Ara
+          <Search className="h-4 w-4" /> {t.nav.searchPh}
           <span className="ml-auto rounded border border-hairline px-1.5 py-0.5 font-mono text-[10px]">⌘K</span>
         </button>
       </div>
 
       <nav className="mt-3 flex flex-col gap-0.5 px-3">
-        {NAV.map((n) => (
-          <a
-            key={n.key}
-            href={n.href}
-            className={cn(
-              'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[14px] font-medium transition-colors',
-              active === n.key ? 'bg-accent-muted text-accent' : 'text-ink-muted hover:bg-surface-subtle hover:text-ink',
-            )}
-          >
+        {nav.map((n) => (
+          <a key={n.key} href={n.href} className={cn('flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[14px] font-medium transition-colors', active === n.key ? 'bg-accent-muted text-accent' : 'text-ink-muted hover:bg-surface-subtle hover:text-ink')}>
             {n.icon}
             {n.label}
           </a>
@@ -125,10 +114,8 @@ export function AppSidebar({
       {checklist && (
         <div className="mx-3 mt-5 rounded-2xl border border-hairline bg-surface-subtle p-3.5">
           <div className="flex items-center justify-between">
-            <span className="text-[12px] font-bold uppercase tracking-wide text-ink-faint">Hazır ol</span>
-            <span className="font-mono text-[11px] text-ink-faint">
-              {checklist.filter((c) => c.done).length}/{checklist.length}
-            </span>
+            <span className="text-[12px] font-bold uppercase tracking-wide text-ink-faint">{t.checklist.title}</span>
+            <span className="font-mono text-[11px] text-ink-faint">{checklist.filter((c) => c.done).length}/{checklist.length}</span>
           </div>
           <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-hairline">
             <span className="block h-full rounded-full bg-accent transition-[width]" style={{ width: `${(checklist.filter((c) => c.done).length / checklist.length) * 100}%` }} />
@@ -150,27 +137,19 @@ export function AppSidebar({
 
       <div className="px-3 pt-4">
         <button onClick={onNew} type="button" className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-accent px-3 py-2.5 text-[13.5px] font-semibold text-accent-foreground shadow-glow hover:brightness-110">
-          <Plus className="h-4 w-4" /> Yeni demo
+          <Plus className="h-4 w-4" /> {t.account.newDemo}
         </button>
       </div>
 
-      {/* account menu (bottom-left) */}
       <div className="mt-auto border-t border-hairline p-3">
         <DropdownMenu
           side="top"
           width={224}
-          header={
-            <div>
-              <div className="truncate text-[13px] font-semibold text-ink">{name}</div>
-              <div className="truncate text-[11px] text-ink-faint">{email}</div>
-            </div>
-          }
+          header={<div><div className="truncate text-[13px] font-semibold text-ink">{name}</div><div className="truncate text-[11px] text-ink-faint">{email}</div></div>}
           items={accountItems}
           trigger={
             <span className="flex items-center gap-2.5 rounded-xl px-2.5 py-2 transition-colors hover:bg-surface-subtle">
-              <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full text-[12px] font-bold text-white" style={{ background: brandColor }}>
-                {name ? initials(name) : '–'}
-              </span>
+              <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full text-[12px] font-bold text-white" style={{ background: brandColor }}>{name ? initials(name) : '–'}</span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[13px] font-semibold text-ink">{name}</span>
                 <span className="block truncate text-[11px] text-ink-faint">{email}</span>

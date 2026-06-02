@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Check, Layers } from 'lucide-react';
 import { cn } from '@clickthru/ui';
+import { useT } from '@/lib/i18n';
 
 export function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -196,7 +197,8 @@ export function RemoveButton({ onClick, label }: { onClick: () => void; label: s
 }
 
 /** "Tümüne uygula" — aktif adımdaki ayarı tüm adımlara yayar; tıklayınca kısa süreli ✓ onayı verir. */
-export function ApplyAllButton({ onClick, label = 'Tümüne uygula' }: { onClick: () => void; label?: string }) {
+export function ApplyAllButton({ onClick, label }: { onClick: () => void; label?: string }) {
+  const { t } = useT();
   const [done, setDone] = React.useState(false);
   const timer = React.useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -221,15 +223,16 @@ export function ApplyAllButton({ onClick, label = 'Tümüne uygula' }: { onClick
       )}
     >
       {done ? <Check className="h-3.5 w-3.5" /> : <Layers className="h-3.5 w-3.5" />}
-      {done ? 'Tümüne uygulandı' : label}
+      {done ? t.studio.applied : label ?? t.studio.applyAll}
     </button>
   );
 }
 
 export function ReadonlyPos({ x, y }: { x: number; y: number }) {
+  const { t } = useT();
   return (
     <p className="font-mono text-xs text-ink-faint">
-      x {x.toFixed(2)} · y {y.toFixed(2)} — tuvalde sürükleyerek taşı
+      x {x.toFixed(2)} · y {y.toFixed(2)} — {t.studio.posHint}
     </p>
   );
 }

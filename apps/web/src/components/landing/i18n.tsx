@@ -369,21 +369,21 @@ const en: Copy = {
 const dict: Record<Lang, Copy> = { tr, en };
 
 const LangContext = createContext<{ lang: Lang; setLang: (l: Lang) => void; t: Copy }>({
-  lang: 'tr',
+  lang: 'en',
   setLang: () => {},
-  t: tr,
+  t: en,
 });
 
 export function LangProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Lang>('tr');
+  const [lang, setLangState] = useState<Lang>('en');
   useEffect(() => {
-    const saved = localStorage.getItem('clickthru-landing-lang');
+    const saved = localStorage.getItem('clickthru-lang');
     if (saved === 'tr' || saved === 'en') setLangState(saved);
   }, []);
   function setLang(l: Lang) {
     setLangState(l);
     try {
-      localStorage.setItem('clickthru-landing-lang', l);
+      localStorage.setItem('clickthru-lang', l);
     } catch {
       // yoksay
     }

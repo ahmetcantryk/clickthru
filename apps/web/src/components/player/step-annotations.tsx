@@ -2,6 +2,7 @@
 
 import { Callout, Hotspot, TextLabel } from '@clickthru/ui';
 import type { Step } from '@clickthru/schema';
+import { useT } from '@/lib/i18n';
 import { project } from './camera';
 
 /**
@@ -22,6 +23,7 @@ export function StepAnnotations({
   showNext: boolean;
   showBack: boolean;
 }) {
+  const { t } = useT();
   const f = step.focus;
   const hotspot = step.hotspot;
   const hp = hotspot ? project(hotspot.x, hotspot.y, f) : null;
@@ -60,6 +62,8 @@ export function StepAnnotations({
           style={callout.style}
           onNext={wantsNext ? onNext : undefined}
           onBack={wantsBack ? onBack : undefined}
+          nextLabel={t.studio.next}
+          backLabel={t.studio.back}
         />
       )}
     </div>

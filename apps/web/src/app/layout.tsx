@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Hanken_Grotesk, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
+import { AppLangProvider } from '@/lib/i18n';
 
 // Tasarım fontları (CLAUDE.md §6 revizyonu): gövde Hanken Grotesk, teknik/mono JetBrains Mono.
 const hanken = Hanken_Grotesk({
@@ -36,7 +37,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
       </head>
-      <body className="min-h-screen bg-canvas font-sans text-ink">{children}</body>
+      <body className="min-h-screen bg-canvas font-sans text-ink">
+        <AppLangProvider>{children}</AppLangProvider>
+      </body>
     </html>
   );
 }

@@ -16,9 +16,11 @@ import {
 import { cn } from '@clickthru/ui';
 import type { Step } from '@clickthru/schema';
 import { useEditorStore } from '@/store/editor-store';
+import { useT } from '@/lib/i18n';
 import { ImageGlyph, PlusGlyph, VideoGlyph } from './glyphs';
 
 export function StepsPanel({ open, onCollapse }: { open: boolean; onCollapse: () => void }) {
+  const { t } = useT();
   const steps = useEditorStore((s) => s.demo.steps);
   const addStepWithMedia = useEditorStore((s) => s.addStepWithMedia);
   const reorderStep = useEditorStore((s) => s.reorderStep);
@@ -56,7 +58,7 @@ export function StepsPanel({ open, onCollapse }: { open: boolean; onCollapse: ()
     >
       <div className="flex h-full w-[264px] flex-none flex-col">
         <div className="flex items-center gap-2 px-4 py-3.5">
-          <span className="t-eyebrow">Adımlar</span>
+          <span className="t-eyebrow">{t.studio.steps}</span>
           <span className="rounded-md bg-surface-raised px-1.5 py-0.5 text-[11px] font-semibold text-ink-muted">
             {steps.length}
           </span>
@@ -64,7 +66,7 @@ export function StepsPanel({ open, onCollapse }: { open: boolean; onCollapse: ()
           <button
             type="button"
             onClick={onCollapse}
-            aria-label="Paneli gizle"
+            aria-label={t.studio.hidePanel}
             className="flex h-7 w-7 items-center justify-center rounded-md text-ink-faint hover:bg-surface-subtle hover:text-ink"
           >
             <PanelLeftClose className="h-4 w-4" />
@@ -88,7 +90,7 @@ export function StepsPanel({ open, onCollapse }: { open: boolean; onCollapse: ()
               {i < steps.length - 1 && <InsertButton index={i} />}
             </div>
           ))}
-          {steps.length === 0 && <p className="px-2 py-6 text-center text-xs text-ink-faint">Henüz adım yok.</p>}
+          {steps.length === 0 && <p className="px-2 py-6 text-center text-xs text-ink-faint">{t.studio.noSteps}</p>}
         </div>
 
         <div className="h-px bg-hairline" />
@@ -99,7 +101,7 @@ export function StepsPanel({ open, onCollapse }: { open: boolean; onCollapse: ()
             className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-hairline-strong bg-surface-subtle py-2.5 text-sm font-semibold text-ink-muted transition-colors hover:border-accent-ring hover:bg-accent-muted hover:text-accent"
           >
             <Upload className="h-4 w-4" />
-            PC'den görsel ekle
+            {t.studio.addImage}
           </button>
           <input ref={fileRef} type="file" accept="image/*" onChange={onFile} className="hidden" />
         </div>
@@ -109,6 +111,7 @@ export function StepsPanel({ open, onCollapse }: { open: boolean; onCollapse: ()
 }
 
 function InsertButton({ index }: { index: number }) {
+  const { t } = useT();
   const insertStepAfter = useEditorStore((s) => s.insertStepAfter);
   return (
     // Ortadan geçen gri çizgi + üstünde her zaman görünür "+" düğmesi (§10).
@@ -117,7 +120,7 @@ function InsertButton({ index }: { index: number }) {
       <button
         type="button"
         onClick={() => insertStepAfter(index)}
-        aria-label="Araya adım ekle"
+        aria-label={t.studio.insertStep}
         className="relative z-10 flex h-5 w-5 items-center justify-center rounded-full border border-hairline bg-surface-elevated text-ink-muted shadow-soft-sm transition-colors hover:border-accent-ring hover:text-accent"
       >
         <PlusGlyph className="h-3 w-3" />
@@ -127,10 +130,11 @@ function InsertButton({ index }: { index: number }) {
 }
 
 function TypeChip({ type }: { type: Step['type'] }) {
+  const { t } = useT();
   return (
     <span className="flex items-center gap-1 rounded-md bg-surface-raised px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ink-muted">
       {type === 'video' ? <VideoGlyph className="h-3 w-3" /> : <ImageGlyph className="h-3 w-3" />}
-      {type === 'video' ? 'Video' : 'Görsel'}
+      {type === 'video' ? t.studio.video : t.studio.image}
     </span>
   );
 }
@@ -154,10 +158,11 @@ function StepCard({
   onDrop: () => void;
   onDragEnd: () => void;
 }) {
+  const { t } = useT();
   const stepIndex = useEditorStore((s) => s.stepIndex);
   const selectStep = useEditorStore((s) => s.selectStep);
   const active = index === stepIndex;
-  const title = step.name ?? `Adım ${index + 1}`;
+  const title = step.name ?? t.studio.stepN(index + 1);
 
   return (
     <div
@@ -210,7 +215,7 @@ function StepCard({
         {step.skip && (
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="rounded-md bg-ink/75 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
-              Atlandı
+              {t.studio.skipped}
             </span>
           </div>
         )}
@@ -229,6 +234,7 @@ function StepCard({
 }
 
 function StepMenu({ index, step }: { index: number; step: Step }) {
+  const { t } = useT();
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
   const s = useEditorStore();
@@ -253,20 +259,20 @@ function StepMenu({ index, step }: { index: number; step: Step }) {
   const items = [
     {
       icon: <Pencil className="h-3.5 w-3.5" />,
-      label: 'Yeniden adlandır',
+      label: t.studio.rename,
       onClick: () => {
-        const name = window.prompt('Adım adı', step.name ?? `Adım ${index + 1}`);
+        const name = window.prompt(t.studio.renamePrompt, step.name ?? t.studio.stepN(index + 1));
         if (name) s.renameStep(index, name);
       },
     },
-    { icon: <Copy className="h-3.5 w-3.5" />, label: 'Çoğalt', onClick: () => s.duplicateStep(index) },
-    { icon: <Download className="h-3.5 w-3.5" />, label: 'Görseli indir', onClick: download },
+    { icon: <Copy className="h-3.5 w-3.5" />, label: t.studio.duplicate, onClick: () => s.duplicateStep(index) },
+    { icon: <Download className="h-3.5 w-3.5" />, label: t.studio.downloadImage, onClick: download },
     {
       icon: <EyeOff className="h-3.5 w-3.5" />,
-      label: step.skip ? 'Atlamayı kaldır' : 'Adımı atla',
+      label: step.skip ? t.studio.unskip : t.studio.skipStep,
       onClick: () => s.toggleSkip(index),
     },
-    { icon: <Trash2 className="h-3.5 w-3.5" />, label: 'Sil', onClick: () => s.deleteStep(index), danger: true },
+    { icon: <Trash2 className="h-3.5 w-3.5" />, label: t.studio.delete, onClick: () => s.deleteStep(index), danger: true },
   ];
 
   return (
@@ -274,7 +280,7 @@ function StepMenu({ index, step }: { index: number; step: Step }) {
       <button
         ref={btnRef}
         type="button"
-        aria-label="Adım menüsü"
+        aria-label={t.studio.stepMenu}
         onClick={toggle}
         className="flex h-6 w-6 flex-none items-center justify-center rounded-md text-ink-faint opacity-60 transition-opacity hover:bg-surface-raised hover:text-ink group-hover:opacity-100"
       >

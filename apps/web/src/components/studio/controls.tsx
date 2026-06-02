@@ -4,6 +4,7 @@ import * as React from 'react';
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Ban } from 'lucide-react';
 import { cn } from '@clickthru/ui';
 import type { CalloutPointer } from '@clickthru/schema';
+import { useT } from '@/lib/i18n';
 
 /** Segment kontrol — native dropdown yerine şık, ikon/etiketli. */
 export function Segmented<T extends string>({
@@ -44,16 +45,17 @@ export function PointerPicker({
   value: CalloutPointer;
   onChange: (v: CalloutPointer) => void;
 }) {
+  const { t } = useT();
   return (
     <Segmented<CalloutPointer>
       value={value}
       onChange={onChange}
       options={[
-        { value: 'none', icon: <Ban className="h-3.5 w-3.5" />, title: 'Yok' },
-        { value: 'top', icon: <ArrowUp className="h-3.5 w-3.5" />, title: 'Üst' },
-        { value: 'bottom', icon: <ArrowDown className="h-3.5 w-3.5" />, title: 'Alt' },
-        { value: 'left', icon: <ArrowLeft className="h-3.5 w-3.5" />, title: 'Sol' },
-        { value: 'right', icon: <ArrowRight className="h-3.5 w-3.5" />, title: 'Sağ' },
+        { value: 'none', icon: <Ban className="h-3.5 w-3.5" />, title: t.studio.pNone },
+        { value: 'top', icon: <ArrowUp className="h-3.5 w-3.5" />, title: t.studio.pTop },
+        { value: 'bottom', icon: <ArrowDown className="h-3.5 w-3.5" />, title: t.studio.pBottom },
+        { value: 'left', icon: <ArrowLeft className="h-3.5 w-3.5" />, title: t.studio.pLeft },
+        { value: 'right', icon: <ArrowRight className="h-3.5 w-3.5" />, title: t.studio.pRight },
       ]}
     />
   );

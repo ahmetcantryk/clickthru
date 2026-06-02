@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 import type { EmailOtpType } from '@supabase/supabase-js';
 import { createSupabaseClient } from '@/lib/supabase/client';
 import { isOnboarded, syncSession } from '@/lib/auth';
+import { useT } from '@/lib/i18n';
 
 /** Magic link (token_hash) veya OAuth (code) dönüşünü işler, sonra yönlendirir. */
 export function AuthCallback() {
   const router = useRouter();
+  const { t } = useT();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -29,13 +31,13 @@ export function AuthCallback() {
           if (error) throw error;
         }
         const u = await syncSession();
-        if (!u) throw new Error('Oturum kurulamadı. Bağlantı süresi dolmuş olabilir.');
+        if (!u) throw new Error(t.callback.noSession);
         router.replace(isOnboarded() ? '/workspaces' : '/onboarding');
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Giriş tamamlanamadı.');
+        setError(e instanceof Error ? e.message : t.callback.failed);
       }
     })();
-  }, [router]);
+  }, [router, t]);
 
   return (
     <main
@@ -48,12 +50,12 @@ export function AuthCallback() {
       {error ? (
         <>
           <p className="text-[15px] font-semibold">{error}</p>
-          <a href="/login" className="rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20">Girişe dön</a>
+          <a href="/login" className="rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20">{t.callback.backToLogin}</a>
         </>
       ) : (
         <>
           <span className="h-6 w-6 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-          <p className="text-[14px] text-white/70">Giriş yapılıyor…</p>
+          <p className="text-[14px] text-white/70">{t.callback.signingIn}</p>
         </>
       )}
     </main>

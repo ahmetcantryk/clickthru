@@ -5,6 +5,7 @@ import { ArrowRight } from 'lucide-react';
 import { BrowserFrame, ScreenScene, calloutBorder, calloutShadow, cn, isDarkColor } from '@clickthru/ui';
 import type { CalloutPointer, Focus } from '@clickthru/schema';
 import { useEditorStore, type FocusRect as FocusRectVal } from '@/store/editor-store';
+import { useT } from '@/lib/i18n';
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
@@ -30,6 +31,7 @@ type Guide = { x: number; y: number; w: number; h: number };
 
 /** Düzenleme tuvali — tıkla-seç + sürükle-taşı; sürüklerken px mesafe kılavuzları. */
 export function EditCanvas() {
+  const { t } = useT();
   const demo = useEditorStore((s) => s.demo);
   const stepIndex = useEditorStore((s) => s.stepIndex);
   const selection = useEditorStore((s) => s.selection);
@@ -100,7 +102,7 @@ export function EditCanvas() {
     return (
       <ScreenScene data-theme="light" className="h-full" background={demo.defaultBackground}>
         <div className="flex items-center justify-center py-20 text-sm text-ink-faint">
-          Adım yok — soldan “PC'den görsel ekle” ile başla.
+          {t.studio.emptyCanvas}
         </div>
       </ScreenScene>
     );
@@ -277,7 +279,7 @@ export function EditCanvas() {
                           : 'border-hairline bg-surface-subtle text-ink-muted hover:text-ink',
                       )}
                     >
-                      Geri
+                      {t.studio.back}
                     </button>
                   )}
                   <div className="flex-1" />
@@ -294,7 +296,7 @@ export function EditCanvas() {
                         isDarkColor(callout.style?.bg) ? 'bg-white text-accent' : 'bg-accent text-white hover:brightness-110',
                       )}
                     >
-                      İleri
+                      {t.studio.next}
                       <ArrowRight className="h-3.5 w-3.5" />
                     </button>
                   )}
@@ -371,6 +373,7 @@ function FocusRect({
   onSelect: () => void;
   onChange: (rect: FocusRectVal) => void;
 }) {
+  const { t } = useT();
   const zoomScale = Math.min(1 / focus.w, 1 / focus.h);
 
   function startFocusDrag(mode: FocusDragMode) {
@@ -438,7 +441,7 @@ function FocusRect({
       />
 
       <span className="pointer-events-none absolute -top-5 left-0 z-10 whitespace-nowrap rounded bg-accent px-1.5 py-0.5 text-[10px] font-semibold text-white">
-        zoom {zoomScale.toFixed(1)}×
+        {t.studio.zoomTag(zoomScale.toFixed(1))}
       </span>
 
       {FOCUS_CORNERS.map((c) => (

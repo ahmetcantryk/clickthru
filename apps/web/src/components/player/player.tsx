@@ -6,6 +6,7 @@ import { X } from 'lucide-react';
 import { BrowserFrame, ScreenScene } from '@clickthru/ui';
 import type { Demo } from '@clickthru/schema';
 import { usePlayerStore } from '@/store/player-store';
+import { useT } from '@/lib/i18n';
 import { StepMedia } from './step-media';
 import { StepAnnotations } from './step-annotations';
 import { ProgressBar } from './progress-bar';
@@ -20,7 +21,20 @@ const THEATER = 'radial-gradient(120% 90% at 50% 0%, oklch(0.2 0.02 264), oklch(
  * Schema'dan beslenen player (CLAUDE.md §9).
  * focus = kamera: aynı medyalı ardışık adımlar arası PAN, farklı medyada crossfade.
  */
-export function Player({ demo, onClose }: { demo: Demo; onClose?: () => void }) {
+export function Player({
+  demo,
+  onClose,
+  hideControls = false,
+  autoAdvanceMs,
+}: {
+  demo: Demo;
+  onClose?: () => void;
+  /** Kontrol dock'unu gizle (embed export / sade gömme). */
+  hideControls?: boolean;
+  /** Verilirse adımlar bu aralıkla otomatik ilerler (export kaydı için). */
+  autoAdvanceMs?: number;
+}) {
+  const { t } = useT();
   const index = usePlayerStore((s) => s.index);
   const init = usePlayerStore((s) => s.init);
   const next = usePlayerStore((s) => s.next);
@@ -32,10 +46,21 @@ export function Player({ demo, onClose }: { demo: Demo; onClose?: () => void }) 
     init(steps.length);
   }, [demo.id, steps.length, init]);
 
+  // Export modu: adımları otomatik ilerlet (son adımda durur).
+  useEffect(() => {
+    if (!autoAdvanceMs) return;
+    const id = setInterval(() => {
+      const s = usePlayerStore.getState();
+      if (s.index >= s.total - 1) clearInterval(id);
+      else s.next();
+    }, autoAdvanceMs);
+    return () => clearInterval(id);
+  }, [autoAdvanceMs, demo.id]);
+
   if (steps.length === 0) {
     return (
       <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl" style={{ background: THEATER }}>
-        <div className="text-sm text-white/60">Bu demoda oynatılacak adım yok.</div>
+        <div className="text-sm text-white/60">{t.studio.noPlay}</div>
       </div>
     );
   }
@@ -64,7 +89,7 @@ export function Player({ demo, onClose }: { demo: Demo; onClose?: () => void }) 
         <button
           type="button"
           onClick={onClose}
-          aria-label="Kapat"
+          aria-label={t.common.close}
           className="absolute right-5 top-5 z-10 flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 text-white/80 transition-colors hover:bg-white/20"
         >
           <X className="h-4 w-4" />
@@ -123,9 +148,11 @@ export function Player({ demo, onClose }: { demo: Demo; onClose?: () => void }) 
       </div>
 
       {/* yüzen kontrol dock'u */}
-      <div className="absolute bottom-6 left-1/2 z-10 w-[min(760px,calc(100%-48px))] -translate-x-1/2">
-        <ProgressBar steps={steps} />
-      </div>
+      {!hideControls && (
+        <div className="absolute bottom-6 left-1/2 z-10 w-[min(760px,calc(100%-48px))] -translate-x-1/2">
+          <ProgressBar steps={steps} />
+        </div>
+      )}
     </div>
   );
 }

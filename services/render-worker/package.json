@@ -1,6 +1,17 @@
 {
   "name": "@clickthru/render-worker",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
-  "description": "Sunucu-taraflı export (video/gif/html) — iskelet. Faz 2. Playwright + ffmpeg."
+  "type": "module",
+  "description": "Sunucu-taraflı export (video/GIF) — Playwright + ffmpeg. STANDALONE (pnpm workspace dışı).",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "setup": "playwright install chromium"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "playwright": "^1.49.1"
+  }
 }

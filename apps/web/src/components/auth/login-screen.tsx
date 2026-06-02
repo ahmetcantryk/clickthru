@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { isOnboarded, signInWithEmail, signInWithGoogle, syncSession } from '@/lib/auth';
+import { useT } from '@/lib/i18n';
 
 const ACCENT = 'oklch(0.68 0.17 256)';
 
@@ -47,6 +48,7 @@ const Spinner = ({ dark }: { dark?: boolean }) => (
 
 export function LoginScreen() {
   const router = useRouter();
+  const { t } = useT();
   const [show, setShow] = useState(false);
   const [busy, setBusy] = useState<null | 'google' | 'email'>(null);
   const [email, setEmail] = useState('');
@@ -65,7 +67,7 @@ export function LoginScreen() {
     setBusy('google');
     const { error } = await signInWithGoogle();
     if (error) {
-      setError('Google ile giriş başlatılamadı. (Sağlayıcı henüz yapılandırılmamış olabilir.)');
+      setError(t.login.googleErr);
       setBusy(null);
     }
     // başarılıysa Google'a yönlenir
@@ -119,7 +121,7 @@ export function LoginScreen() {
           </span>
           <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: '-0.03em' }}>clickthru</span>
         </a>
-        <a href="/" style={{ fontSize: 13.5, color: 'rgba(255,255,255,.7)', textDecoration: 'none' }}>← Ana sayfa</a>
+        <a href="/" style={{ fontSize: 13.5, color: 'rgba(255,255,255,.7)', textDecoration: 'none' }}>{t.login.home}</a>
       </div>
 
       <div style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 160px)', padding: 24 }}>
@@ -136,25 +138,25 @@ export function LoginScreen() {
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="M3.5 6.5l8.5 6 8.5-6" /></svg>
                 </span>
               </div>
-              <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.03em', margin: 0 }}>Gelen kutunu kontrol et</h1>
+              <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.03em', margin: 0 }}>{t.login.sentTitle}</h1>
               <p style={{ fontSize: 14.5, lineHeight: 1.55, color: 'rgba(255,255,255,.72)', margin: '12px 0 22px' }}>
-                <span style={{ color: '#fff', fontWeight: 600 }}>{email}</span> adresine sihirli bir giriş bağlantısı gönderdik. Bağlantıya tıkla, otomatik giriş yap.
+                {t.login.sentBody1}<span style={{ color: '#fff', fontWeight: 600 }}>{email}</span>{t.login.sentBody2}
               </p>
-              <button type="button" onClick={() => { setSent(false); setEmail(''); }} style={ghostBtn}>Başka bir e-posta kullan</button>
+              <button type="button" onClick={() => { setSent(false); setEmail(''); }} style={ghostBtn}>{t.login.useAnother}</button>
             </div>
           ) : (
             <>
-              <div style={{ font: '600 11.5px/1 var(--font-jetbrains), monospace', letterSpacing: '.16em', textTransform: 'uppercase', color: ACCENT, marginBottom: 16 }}>İNTERAKTİF ÜRÜN DEMOLARI</div>
-              <h1 style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.08, margin: 0 }}>Tekrar hoş geldin.</h1>
-              <p style={{ fontSize: 15, lineHeight: 1.55, color: 'rgba(255,255,255,.72)', margin: '12px 0 26px' }}>Demolarına eriş, yeni tur oluştur, tek linkle ekibinle paylaş.</p>
+              <div style={{ font: '600 11.5px/1 var(--font-jetbrains), monospace', letterSpacing: '.16em', textTransform: 'uppercase', color: ACCENT, marginBottom: 16 }}>{t.login.eyebrow}</div>
+              <h1 style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.08, margin: 0 }}>{t.login.title}</h1>
+              <p style={{ fontSize: 15, lineHeight: 1.55, color: 'rgba(255,255,255,.72)', margin: '12px 0 26px' }}>{t.login.lead}</p>
 
               <button type="button" onClick={google} disabled={!!busy} style={whiteBtn(!!busy)}>
                 {busy === 'google' ? <Spinner dark /> : <GoogleG />}
-                {busy === 'google' ? 'Yönlendiriliyor…' : 'Google ile devam et'}
+                {busy === 'google' ? t.login.redirecting : t.login.google}
               </button>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0', color: 'rgba(255,255,255,.4)', fontSize: 12 }}>
-                <span style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.12)' }} /> veya e-posta ile <span style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.12)' }} />
+                <span style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.12)' }} /> {t.login.or} <span style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.12)' }} />
               </div>
 
               <form onSubmit={sendLink} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -163,11 +165,11 @@ export function LoginScreen() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="çalışma e-postan"
+                  placeholder={t.login.emailPh}
                   style={{ height: 48, borderRadius: 12, border: '1px solid rgba(255,255,255,.16)', background: 'rgba(255,255,255,.06)', color: '#fff', padding: '0 14px', fontSize: 14.5, fontFamily: 'inherit', outline: 'none' }}
                 />
                 <button type="submit" disabled={!!busy} style={accentBtn(!!busy)}>
-                  {busy === 'email' ? <><Spinner /> Gönderiliyor…</> : 'Sihirli bağlantı gönder'}
+                  {busy === 'email' ? <><Spinner /> {t.login.sending}</> : t.login.send}
                 </button>
               </form>
 
@@ -175,10 +177,10 @@ export function LoginScreen() {
 
               <a href="/#showcase" style={{ ...ghostBtn, marginTop: 16, display: 'flex' }}>
                 <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M4 3.2v9.6c0 .5.5.8.9.5l7-4.8a.6.6 0 000-1l-7-4.8a.6.6 0 00-.9.5z" /></svg>
-                Önce canlı demoyu izle
+                {t.login.watch}
               </a>
               <p style={{ fontSize: 11.5, lineHeight: 1.5, color: 'rgba(255,255,255,.45)', margin: '20px 0 0', textAlign: 'center' }}>
-                Devam ederek <span style={{ color: 'rgba(255,255,255,.7)' }}>Şartlar</span> ve <span style={{ color: 'rgba(255,255,255,.7)' }}>Gizlilik</span> politikasını kabul edersin.
+                {t.login.terms1}<span style={{ color: 'rgba(255,255,255,.7)' }}>{t.login.terms}</span>{t.login.termsAnd}<span style={{ color: 'rgba(255,255,255,.7)' }}>{t.login.privacy}</span>{t.login.terms2}
               </p>
             </>
           )}

@@ -1,4 +1,7 @@
 packages:
   - 'apps/*'
   - 'services/*'
+  # render-worker workspace DIŞI: kendi ağır bağımlılıkları (Playwright/ffmpeg)
+  # kök/Vercel kurulumunu yavaşlatmasın diye standalone kurulur (services/render-worker/README.md).
+  - '!services/render-worker'
   - 'packages/*'

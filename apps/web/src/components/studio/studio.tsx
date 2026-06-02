@@ -6,18 +6,20 @@ import { Button, cn } from '@clickthru/ui';
 import { safeValidateDemo, type Demo } from '@clickthru/schema';
 import { useEditorStore } from '@/store/editor-store';
 import { getErrorMessage, saveDemo } from '@/lib/demos';
+import { useT } from '@/lib/i18n';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { StepsPanel } from './steps-panel';
 import { EditCanvas } from './edit-canvas';
 import { CanvasToolbar } from './canvas-toolbar';
 import { InspectorPanel } from './inspector-panel';
 import { PreviewOverlay } from './preview-overlay';
-import { ShareDialog } from './share-dialog';
+import { ExportDialog } from './export-dialog';
 
 type Status = { kind: 'success' | 'error'; text: string } | null;
 
 /** Studio kabuğu: üst bar + 3 kolon (adımlar · düzenleme tuvali · inspector) + önizleme. */
 export function Studio({ initialDemo }: { initialDemo?: Demo }) {
+  const { t } = useT();
   const demo = useEditorStore((s) => s.demo);
   const loadDemo = useEditorStore((s) => s.loadDemo);
   const prepareShare = useEditorStore((s) => s.prepareShare);
@@ -26,7 +28,7 @@ export function Studio({ initialDemo }: { initialDemo?: Demo }) {
   const [preview, setPreview] = useState(false);
   const [status, setStatus] = useState<Status>(null);
   const [busy, setBusy] = useState(false);
-  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [shareId, setShareId] = useState<string | null>(null);
 
   // macOS tarzı açılır-kapanır paneller.
   const [leftOpen, setLeftOpen] = useState(true);
@@ -39,7 +41,7 @@ export function Studio({ initialDemo }: { initialDemo?: Demo }) {
 
   function validate() {
     const res = safeValidateDemo(demo);
-    setStatus(res.ok ? { kind: 'success', text: 'Geçerli JSON' } : { kind: 'error', text: res.errors[0] ?? 'Hata' });
+    setStatus(res.ok ? { kind: 'success', text: t.studio.validJson } : { kind: 'error', text: res.errors[0] ?? t.studio.invalid });
     setTimeout(() => setStatus(null), 2800);
   }
 
@@ -51,7 +53,7 @@ export function Studio({ initialDemo }: { initialDemo?: Demo }) {
       await saveDemo(useEditorStore.getState().demo);
       // Yenilemede düzenlemeye devam edebilmek için URL'i güncelle.
       window.history.replaceState(null, '', `/studio?demo=${id}`);
-      setShareUrl(`${window.location.origin}/play/${id}`);
+      setShareId(id);
     } catch (e) {
       setStatus({ kind: 'error', text: getErrorMessage(e) });
       setTimeout(() => setStatus(null), 4000);
@@ -64,7 +66,7 @@ export function Studio({ initialDemo }: { initialDemo?: Demo }) {
     <div className="flex h-screen flex-col bg-canvas">
       <header className="z-20 flex h-14 flex-none items-center gap-3 border-b border-hairline bg-surface px-4">
         <PanelToggle side="left" open={leftOpen} onClick={() => setLeftOpen((v) => !v)} />
-        <a href="/workspaces" title="Çalışma alanına dön" className="rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-accent-ring">
+        <a href="/workspaces" title={t.studio.backToWorkspace} className="rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-accent-ring">
           <Logo />
         </a>
         <span className="h-5 w-px bg-hairline" />
@@ -93,15 +95,15 @@ export function Studio({ initialDemo }: { initialDemo?: Demo }) {
 
         <Button variant="ghost" size="sm" onClick={validate}>
           <ShieldCheck className="h-4 w-4" />
-          Doğrula
+          {t.studio.validate}
         </Button>
         <Button variant="outline" size="sm" onClick={() => setPreview(true)}>
           <Play className="h-4 w-4" />
-          Önizle
+          {t.studio.preview}
         </Button>
         <Button size="sm" onClick={share} disabled={busy}>
           {busy ? <span className="spinner" /> : <Share2 className="h-4 w-4" />}
-          {busy ? 'Kaydediliyor…' : 'Paylaş'}
+          {busy ? t.studio.saving : t.studio.share}
         </Button>
 
         <span className="mx-0.5 h-5 w-px bg-hairline" />
@@ -121,7 +123,7 @@ export function Studio({ initialDemo }: { initialDemo?: Demo }) {
       </div>
 
       {preview && <PreviewOverlay demo={demo} onClose={() => setPreview(false)} />}
-      {shareUrl && <ShareDialog url={shareUrl} onClose={() => setShareUrl(null)} />}
+      {shareId && <ExportDialog demoId={shareId} onClose={() => setShareId(null)} />}
     </div>
   );
 }
@@ -144,13 +146,15 @@ function Logo() {
 
 /** Üst bar panel aç/kapa düğmesi (macOS sidebar tarzı). */
 function PanelToggle({ side, open, onClick }: { side: 'left' | 'right'; open: boolean; onClick: () => void }) {
+  const { t } = useT();
   const Icon = side === 'left' ? PanelLeft : PanelRight;
+  const name = side === 'left' ? t.studio.steps : t.studio.inspector;
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-label={`${side === 'left' ? 'Sol' : 'Sağ'} paneli ${open ? 'gizle' : 'göster'}`}
-      title={`${side === 'left' ? 'Adımlar' : 'Inspector'} panelini ${open ? 'gizle' : 'göster'}`}
+      aria-label={t.studio.togglePanel(name, open)}
+      title={t.studio.togglePanel(name, open)}
       className={cn(
         'flex h-9 w-9 items-center justify-center rounded-lg border transition-colors',
         open

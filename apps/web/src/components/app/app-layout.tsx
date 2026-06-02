@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { sampleDemos } from '@clickthru/schema';
 import { AuthGate, getProfile, getSession, signOut } from '@/lib/auth';
+import { useT } from '@/lib/i18n';
 import { listDemos, type DemoSummary } from '@/lib/demos';
 import { NewDemoModal } from '@/components/workspaces/new-demo-modal';
 import { AppSidebar, type AppSection } from './app-sidebar';
@@ -36,6 +37,7 @@ export function AppLayout({ active, children }: { active: AppSection; children: 
 
 function AppLayoutInner({ active, children }: { active: AppSection; children: React.ReactNode }) {
   const router = useRouter();
+  const { t } = useT();
   const user = getSession();
   const profile = getProfile();
   const [demos, setDemos] = useState<DemoSummary[] | null>(null);
@@ -43,7 +45,7 @@ function AppLayoutInner({ active, children }: { active: AppSection; children: Re
   const [cmd, setCmd] = useState(false);
 
   const name = user?.name ?? '';
-  const workspace = profile?.workspace || (user ? `${user.name.split(' ')[0]}'in alanı` : 'Çalışma alanı');
+  const workspace = profile?.workspace || (user ? t.workspaceOf(user.name.split(' ')[0]) : t.onboarding.yourWs);
   const brandColor = profile?.brandColor || '#2142E7';
 
   useEffect(() => {
@@ -68,10 +70,10 @@ function AppLayoutInner({ active, children }: { active: AppSection; children: Re
   }, []);
 
   const checklist = [
-    { label: 'Profil oluştur', done: true },
-    { label: 'İlk demoyu oluştur', done: (demos?.length ?? 0) > 0 },
-    { label: 'Bir callout ekle', done: false },
-    { label: 'Demoyu paylaş', done: false },
+    { label: t.checklist.createProfile, done: true },
+    { label: t.checklist.firstDemo, done: (demos?.length ?? 0) > 0 },
+    { label: t.checklist.addCallout, done: false },
+    { label: t.checklist.shareDemo, done: false },
   ];
 
   return (

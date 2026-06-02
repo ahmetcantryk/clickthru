@@ -3,12 +3,14 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Step } from '@clickthru/schema';
 import { usePlayerStore } from '@/store/player-store';
+import { useT } from '@/lib/i18n';
 
 /**
  * Yüzen koyu cam kontrol dock'u (design player).
  * Geniş segmentli ilerleme: geçmiş/aktif dolu; aktif VIDEO segmenti süreyle dolar.
  */
 export function ProgressBar({ steps }: { steps: Step[] }) {
+  const { t } = useT();
   const index = usePlayerStore((s) => s.index);
   const next = usePlayerStore((s) => s.next);
   const prev = usePlayerStore((s) => s.prev);
@@ -29,7 +31,7 @@ export function ProgressBar({ steps }: { steps: Step[] }) {
         type="button"
         onClick={prev}
         disabled={index <= 0}
-        aria-label="Geri"
+        aria-label={t.studio.back}
         className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-white/10 text-white transition-colors hover:bg-white/20 disabled:opacity-30 disabled:hover:bg-white/10"
       >
         <ChevronLeft className="h-4 w-4" />
@@ -40,7 +42,7 @@ export function ProgressBar({ steps }: { steps: Step[] }) {
           <button
             key={s.id}
             type="button"
-            aria-label={`Adım ${i + 1}`}
+            aria-label={t.studio.stepN(i + 1)}
             onClick={() => goTo(i)}
             className="relative h-1 flex-1 overflow-hidden rounded-full bg-white/20"
             style={{ flexGrow: s.type === 'video' ? 1.6 : 1 }}
@@ -61,7 +63,7 @@ export function ProgressBar({ steps }: { steps: Step[] }) {
         type="button"
         onClick={next}
         disabled={index >= total - 1}
-        aria-label="İleri"
+        aria-label={t.studio.next}
         className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-accent text-white transition-[filter] hover:brightness-110 disabled:opacity-30"
       >
         <ChevronRight className="h-4 w-4" />
