@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { sampleDemos } from '@clickthru/schema';
 import { getDemo } from '@/lib/demos';
 import { Player } from '@/components/player/player';
+import { ViewTracker } from '@/components/player/view-tracker';
 
 // Saf player / paylaşım hedefi. Önce Supabase'den; bulunamazsa örnek demolara düşer.
 export default async function PlayPage({ params }: { params: Promise<{ demoId: string }> }) {
@@ -23,6 +24,7 @@ export default async function PlayPage({ params }: { params: Promise<{ demoId: s
 
   return (
     <main className="h-screen bg-canvas p-4">
+      <ViewTracker demoId={demo.id} />
       <div className="mx-auto h-full w-full max-w-6xl">
         <Player demo={demo} />
       </div>
