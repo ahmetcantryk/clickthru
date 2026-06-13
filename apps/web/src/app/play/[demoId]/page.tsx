@@ -1,8 +1,34 @@
+import { cache } from 'react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { sampleDemos } from '@clickthru/schema';
 import { getDemo } from '@/lib/demos';
 import { overridesFromParams } from '@/lib/personalize';
 import { Player } from '@/components/player/player';
+
+// Demoyu tek seferde yükle (cache: generateMetadata + sayfa aynı isteği paylaşır, çift sorgu olmaz).
+const loadDemo = cache(async (demoId: string) => {
+  const fromDb = await getDemo(demoId).catch(() => null);
+  return fromDb ?? sampleDemos.find((d) => d.id === demoId) ?? null;
+});
+
+/** Paylaşım önizlemesi (Slack/LinkedIn/iMessage) — başlık + açıklama + ilk medya görseli. */
+export async function generateMetadata({ params }: { params: Promise<{ demoId: string }> }): Promise<Metadata> {
+  const { demoId } = await params;
+  const demo = await loadDemo(demoId);
+  if (!demo) return { title: 'Demo not found · clickthru' };
+  const title = `${demo.title} · clickthru`;
+  const description = 'Interactive product demo — play the clickable walkthrough.';
+  // og:image yalnız mutlak (http) medya için; data:/relatif örnek yolları atlanır.
+  const image = demo.steps.find((s) => /^https?:\/\//.test(s.media))?.media;
+  const images = image ? [image] : undefined;
+  return {
+    title,
+    description,
+    openGraph: { title, description, type: 'website', images },
+    twitter: { card: 'summary_large_image', title, description, images },
+  };
+}
 
 // Saf player / paylaşım hedefi. Önce Supabase'den; bulunamazsa örnek demolara düşer.
 export default async function PlayPage({
@@ -13,8 +39,7 @@ export default async function PlayPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { demoId } = await params;
-  const fromDb = await getDemo(demoId).catch(() => null);
-  const demo = fromDb ?? sampleDemos.find((d) => d.id === demoId);
+  const demo = await loadDemo(demoId);
 
   if (!demo) {
     return (
