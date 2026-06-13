@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "clickthru capture",
-  "version": "0.2.0",
-  "description": "Tıklamaları yakala → ekran görüntüsü + hotspot → tıklanabilir demo.",
+  "version": "0.3.0",
+  "description": "Ekranını kaydet → tıklamalar adım, scroll'lar video → tıklanabilir demo.",
   "action": {
     "default_popup": "popup.html",
     "default_title": "clickthru capture"
@@ -11,6 +11,12 @@
     "service_worker": "background.js",
     "type": "module"
   },
-  "permissions": ["tabs", "storage", "scripting"],
-  "host_permissions": ["<all_urls>"]
+  "permissions": ["tabs", "storage", "scripting", "tabCapture", "offscreen"],
+  "host_permissions": ["<all_urls>"],
+  "commands": {
+    "stop-recording": {
+      "suggested_key": { "default": "Ctrl+Shift+Y" },
+      "description": "clickthru kaydını durdur"
+    }
+  }
 }

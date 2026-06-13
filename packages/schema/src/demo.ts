@@ -112,8 +112,18 @@ export const stepSchema = z.object({
   /** Oynatmada atlanır. */
   skip: z.boolean().optional(),
   type: stepTypeSchema,
-  /** Medya referansı (screenshot: görsel; video: .mp4). */
+  /** Medya referansı (screenshot: görsel URL; video: kaynak video URL — segmentler paylaşır). */
   media: z.string().min(1),
+  /**
+   * Video segmenti in/out noktaları (saniye). Tek bir kaynak videoyu birden çok
+   * `video` adımı paylaşabilir; player bu aralığa seek eder ve clipEnd'de durur.
+   */
+  clipStart: z.number().min(0).optional(),
+  clipEnd: z.number().min(0).optional(),
+  /** Video adımı için poster/önizleme görseli URL'i (yüklenmeden önce gösterilir). */
+  poster: z.string().min(1).optional(),
+  /** Kaynak video süresi (ms) — progress çubuğunu metadata gelmeden boyutlamak için. */
+  durationMs: z.number().int().min(0).optional(),
   /** Adım bazlı arka plan (yoksa demo.defaultBackground kullanılır). */
   background: z.string().min(1).optional(),
   hotspot: hotspotSchema.optional(),

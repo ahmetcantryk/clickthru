@@ -40,20 +40,33 @@ function VideoMedia({
   onBroken: () => void;
 }) {
   const setVideoProgress = usePlayerStore((s) => s.setVideoProgress);
+  const clipStart = step.clipStart ?? 0;
+  const clipEnd = step.clipEnd;
 
   return (
     <video
       src={step.media}
+      poster={step.poster}
       className="h-full w-full bg-black object-cover"
       autoPlay
       muted
       playsInline
-      controls
+      onLoadedMetadata={(e) => {
+        // Segment ise başlangıç noktasına seek et (tek video, çok adım).
+        if (clipStart > 0) e.currentTarget.currentTime = clipStart;
+      }}
       onEnded={onAdvance}
       onError={onBroken}
       onTimeUpdate={(e) => {
         const el = e.currentTarget;
-        if (el.duration > 0) setVideoProgress(el.currentTime / el.duration);
+        const end = clipEnd ?? el.duration;
+        const span = Math.max(0.01, end - clipStart);
+        setVideoProgress(Math.min(1, Math.max(0, (el.currentTime - clipStart) / span)));
+        // Segment sonuna gelince adımı ilerlet (clipEnd verilmişse).
+        if (clipEnd != null && el.currentTime >= clipEnd) {
+          el.pause();
+          onAdvance();
+        }
       }}
     />
   );

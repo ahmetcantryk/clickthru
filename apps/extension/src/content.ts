@@ -1,6 +1,6 @@
 // clickthru sayfa-içi recorder overlay (popup'taki "Kaydı başlat" ile enjekte edilir).
-// 5-4-3-2-1 geri sayım (beyaz saydam overlay) · ortada ✕ iptal · üstte "Recording area" · altta Durdur + Ctrl+Y.
-// Kayıt sırasında her tıklama arka plana bildirilir; yakalama anında overlay gizlenir (screenshot'a girmesin).
+// 5-4-3-2-1 geri sayım (pre-roll, kaydedilmez) → overlay GİZLENİR (videoya girmesin) → kayıt başlar.
+// Kayıt sırasında: tıklama → CLICK, scroll → SCROLL (arka plana). Durdurma: Ctrl+Y / uzantı simgesi. İptal: Esc.
 (() => {
   const w = window as unknown as { __clickthruRecorder?: boolean };
   if (w.__clickthruRecorder) return;
@@ -11,8 +11,6 @@
   type Phase = 'countdown' | 'recording' | 'saving';
   let phase: Phase = 'countdown';
 
-  // Eklenti bağlamı geçerli mi? Dev'de uzantı yeniden yüklenince eski content script kopar;
-  // bu durumda chrome.* çağrıları "Extension context invalidated" atar → sessizce teardown.
   const alive = (): boolean => {
     try {
       return !!chrome.runtime?.id;
@@ -29,58 +27,22 @@
   root.innerHTML = `
     <style>
       :host, * { box-sizing: border-box; }
-      .ui { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
-      .dim {
-        position: fixed; inset: 0; pointer-events: auto;
-        background: rgba(255,255,255,0.66);
-        backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-      }
-      .timer {
-        position: fixed; top: 30%; left: 50%; transform: translate(-50%,-50%);
-        display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center;
-      }
-      .count {
-        font-size: clamp(150px, 27vh, 300px); font-weight: 200; letter-spacing: -0.04em; line-height: .9;
-        color: #0b0b12; font-variant-numeric: tabular-nums; font-feature-settings: "tnum";
-      }
+      .ui { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+      .dim { position: fixed; inset: 0; pointer-events: auto; background: rgba(255,255,255,0.66); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+      .timer { position: fixed; top: 32%; left: 50%; transform: translate(-50%,-50%); display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+      .count { font-size: clamp(150px, 27vh, 300px); font-weight: 200; letter-spacing: -0.04em; line-height: .9; color: #0b0b12; font-variant-numeric: tabular-nums; }
       .count.anim { animation: tick .92s cubic-bezier(.22,.61,.36,1); }
       @keyframes tick { 0% { opacity: 0; transform: scale(.82) } 35% { opacity: 1; transform: scale(1) } 100% { opacity: .92; transform: scale(1) } }
-      .hint { font-size: 14px; font-weight: 500; letter-spacing: .01em; color: #5b5b66; }
-      .pill-top {
-        position: fixed; top: 0; left: 50%; transform: translateX(-50%); pointer-events: auto;
-        display: flex; align-items: center; gap: 8px; padding: 7px 16px;
-        background: #0b0b12; color: #fff; font-size: 12px; font-weight: 600; letter-spacing: .01em;
-        border-radius: 0 0 14px 14px; box-shadow: 0 6px 20px rgba(0,0,0,.22);
-      }
-      .rec-dot { width: 9px; height: 9px; border-radius: 50%; background: #ff4d4f; animation: blink 1.3s ease-in-out infinite; }
-      @keyframes blink { 50% { opacity: .25 } }
-      .x-btn {
-        position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: auto;
-        width: 56px; height: 56px; border: 0; border-radius: 50%; cursor: pointer;
-        background: #fff; color: #0b0b12;
-        box-shadow: 0 14px 38px -10px rgba(20,22,60,.34), 0 2px 6px rgba(0,0,0,.08);
-        display: flex; align-items: center; justify-content: center; transition: transform .15s, background .15s;
-      }
-      .x-btn:hover { background: #f5f5f7; transform: translate(-50%,-50%) scale(1.06); }
+      .hint { font-size: 15px; font-weight: 500; color: #5b5b66; }
+      .go { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+      .go .ring { width: 60px; height: 60px; border-radius: 50%; background: ${ACCENT}; display: flex; align-items: center; justify-content: center; box-shadow: 0 14px 40px -10px rgba(33,66,231,.6); }
+      .go .ring span { width: 18px; height: 18px; border-radius: 50%; background: #fff; animation: pulse 1.2s ease-in-out infinite; }
+      @keyframes pulse { 50% { opacity: .4 } }
+      .go .lbl { font-size: 16px; font-weight: 600; color: #0b0b12; }
+      .go .kbd { font-size: 12px; font-weight: 600; color: #5b5b66; background: #f1f1f4; border: 1px solid rgba(15,15,30,.1); border-bottom-width: 2px; border-radius: 7px; padding: 3px 8px; }
+      .x-btn { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: auto; width: 56px; height: 56px; border: 0; border-radius: 50%; cursor: pointer; background: #fff; color: #0b0b12; box-shadow: 0 14px 38px -10px rgba(20,22,60,.34); display: flex; align-items: center; justify-content: center; }
       .x-btn svg { width: 22px; height: 22px; }
-      .bar {
-        position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%); pointer-events: auto;
-        display: flex; align-items: center; gap: 12px; padding: 9px 14px 9px 9px;
-        background: #fff; border-radius: 999px; box-shadow: 0 16px 44px -12px rgba(20,22,60,.32), 0 2px 8px rgba(0,0,0,.08);
-      }
-      .stop-btn {
-        display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px;
-        border: 0; border-radius: 999px; cursor: pointer; background: ${ACCENT}; color: #fff;
-        font-size: 13px; font-weight: 600; transition: filter .15s;
-      }
-      .stop-btn:hover { filter: brightness(1.08); }
-      .stop-sq { width: 11px; height: 11px; border-radius: 3px; background: #fff; }
-      .kbd { font-size: 11px; font-weight: 600; color: #5b5b66; background: #f1f1f4; border: 1px solid rgba(15,15,30,.1); border-bottom-width: 2px; border-radius: 7px; padding: 3px 8px; }
-      .toast {
-        position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%); pointer-events: auto;
-        padding: 11px 20px; background: #0b0b12; color: #fff; font-size: 13px; font-weight: 600;
-        border-radius: 999px; box-shadow: 0 16px 44px -12px rgba(20,22,60,.4);
-      }
+      .toast { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%); pointer-events: auto; padding: 11px 20px; background: #0b0b12; color: #fff; font-size: 13px; font-weight: 600; border-radius: 999px; box-shadow: 0 16px 44px -12px rgba(20,22,60,.4); }
       .hidden { display: none !important; }
     </style>
     <div class="ui">
@@ -89,14 +51,14 @@
         <div class="count anim">${START_FROM}</div>
         <div class="hint">Kayıt başlıyor…</div>
       </div>
-      <div class="pill-top hidden"><span class="rec-dot"></span>Recording area</div>
+      <div class="go hidden">
+        <div class="ring"><span></span></div>
+        <div class="lbl">Kayıt başladı</div>
+        <div><span class="kbd">Ctrl+Y</span> ile durdur · uzantı simgesi</div>
+      </div>
       <button class="x-btn" title="İptal (Esc)" aria-label="İptal">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
-      <div class="bar hidden">
-        <button class="stop-btn"><span class="stop-sq"></span>Kaydı durdur</button>
-        <span class="kbd">Ctrl+Y</span>
-      </div>
       <div class="toast hidden">Kaydediliyor…</div>
     </div>
   `;
@@ -105,13 +67,10 @@
   const dim = $<HTMLDivElement>('.dim');
   const timer = $<HTMLDivElement>('.timer');
   const countEl = $<HTMLDivElement>('.count');
-  const pillTop = $<HTMLDivElement>('.pill-top');
-  const bar = $<HTMLDivElement>('.bar');
+  const go = $<HTMLDivElement>('.go');
   const toast = $<HTMLDivElement>('.toast');
   const xBtn = $<HTMLButtonElement>('.x-btn');
-  const stopBtn = $<HTMLButtonElement>('.stop-btn');
 
-  // --- Güvenli mesajlaşma: bağlam koptuysa sessizce teardown ---
   async function send<T = unknown>(message: unknown): Promise<T | undefined> {
     if (!alive()) {
       teardown();
@@ -125,7 +84,7 @@
     }
   }
 
-  // --- Geri sayım (5'ten) → kayıt ---
+  // --- Geri sayım (pre-roll) → kısa "kayıt başladı" ipucu → overlay gizlenir → kayıt ---
   let n = START_FROM;
   const tick = window.setInterval(() => {
     n -= 1;
@@ -137,44 +96,48 @@
       return;
     }
     window.clearInterval(tick);
-    void beginRecording();
+    void preRoll();
   }, 1000);
+
+  async function preRoll(): Promise<void> {
+    timer.classList.add('hidden');
+    go.classList.remove('hidden');
+    xBtn.classList.add('hidden');
+    // ~1.1sn ipucu (hâlâ pre-roll, kaydedilmez), sonra overlay'i tamamen gizle ve kaydı başlat.
+    window.setTimeout(() => void beginRecording(), 1100);
+  }
 
   async function beginRecording(): Promise<void> {
     phase = 'recording';
-    dim.classList.add('hidden');
-    timer.classList.add('hidden');
-    pillTop.classList.remove('hidden');
-    bar.classList.remove('hidden');
-    if (!alive()) return teardown();
-    try {
-      await chrome.storage.local.set({ recording: true, steps: [] });
-    } catch {
-      teardown();
-    }
+    host.style.display = 'none'; // overlay videoya GİRMESİN
+    await send({ type: 'RECORD_NOW' });
   }
 
-  // --- Sayfa tıklamaları → yakalama (overlay'in kendi tıklamaları hariç) ---
+  // --- Sayfa tıklamaları → yakalama ---
   const onPointerDown = (e: PointerEvent): void => {
     if (phase !== 'recording') return;
     if (e.target === host) return;
-    void capture(e.clientX / window.innerWidth, e.clientY / window.innerHeight);
+    void send({ type: 'CLICK', x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight });
   };
 
-  async function capture(x: number, y: number): Promise<void> {
-    if (!alive()) return teardown();
-    host.style.visibility = 'hidden';
-    await send({ type: 'CLICK', x, y });
-    host.style.visibility = 'visible';
-  }
+  // --- Scroll işaretleri (throttle) ---
+  let lastScroll = 0;
+  const onScroll = (): void => {
+    if (phase !== 'recording') return;
+    const now = Date.now();
+    if (now - lastScroll < 350) return;
+    lastScroll = now;
+    void send({ type: 'SCROLL' });
+  };
 
   // --- Durdur / İptal / kısayol ---
   async function stop(): Promise<void> {
     if (phase === 'saving') return;
     if (phase === 'countdown') return cancel();
     phase = 'saving';
-    pillTop.classList.add('hidden');
-    bar.classList.add('hidden');
+    host.style.display = ''; // toast için tekrar göster
+    dim.classList.add('hidden');
+    go.classList.add('hidden');
     xBtn.classList.add('hidden');
     toast.classList.remove('hidden');
     const res = await send<{ ok: boolean; error?: string }>({ type: 'FINALIZE' });
@@ -198,6 +161,7 @@
     window.clearInterval(tick);
     window.removeEventListener('keydown', onKey, true);
     window.removeEventListener('pointerdown', onPointerDown, true);
+    window.removeEventListener('scroll', onScroll, true);
     host.remove();
     w.__clickthruRecorder = false;
   }
@@ -212,8 +176,8 @@
     }
   }
 
-  stopBtn.addEventListener('click', () => void stop());
   xBtn.addEventListener('click', () => cancel());
   window.addEventListener('pointerdown', onPointerDown, true);
+  window.addEventListener('scroll', onScroll, true);
   window.addEventListener('keydown', onKey, true);
 })();

@@ -5,7 +5,7 @@
     <style>
       :root { color-scheme: light; }
       * { box-sizing: border-box; }
-      body { width: 256px; margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #0b0b12; background: #fff; }
+      body { width: 268px; margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #0b0b12; background: #fff; }
       .wrap { padding: 16px; }
       .brand { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
       .logo { width: 22px; height: 22px; border-radius: 6px; background: #2142e7; }
@@ -13,31 +13,44 @@
       h1 { font-size: 13px; margin: 0 0 2px; }
       p.sub { font-size: 11px; color: #5b5b66; margin: 0 0 14px; line-height: 1.45; }
       label { font-size: 11px; color: #5b5b66; display: block; margin-bottom: 5px; }
-      input { width: 100%; height: 34px; padding: 0 11px; border: 1px solid rgba(15,15,30,0.12); border-radius: 9px; font-size: 13px; margin-bottom: 12px; outline: none; }
-      input:focus { border-color: rgba(33,66,231,0.5); box-shadow: 0 0 0 3px rgba(33,66,231,0.15); }
-      button {
-        width: 100%; height: 40px; border: 0; border-radius: 11px; cursor: pointer;
-        background: #2142e7; color: #fff; font-size: 13px; font-weight: 600;
-        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-        transition: filter 0.15s;
-      }
+      input, select { width: 100%; height: 34px; padding: 0 11px; border: 1px solid rgba(15,15,30,0.12); border-radius: 9px; font-size: 13px; margin-bottom: 12px; outline: none; background: #fff; }
+      input:focus, select:focus { border-color: rgba(33,66,231,0.5); box-shadow: 0 0 0 3px rgba(33,66,231,0.15); }
+      button { width: 100%; height: 40px; border: 0; border-radius: 11px; cursor: pointer; background: #2142e7; color: #fff; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: filter 0.15s; }
       button:hover { filter: brightness(1.08); }
       button:disabled { opacity: 0.5; cursor: default; }
+      button.stop { background: #ef4444; }
       .dot { width: 9px; height: 9px; border-radius: 50%; background: #fff; }
       .foot { margin-top: 11px; font-size: 11px; color: #8a8a94; text-align: center; }
       .foot b { color: #5b5b66; font-weight: 600; }
       .err { margin-top: 10px; font-size: 11px; color: #ef4444; }
+      .hidden { display: none !important; }
     </style>
   </head>
   <body>
     <div class="wrap">
       <div class="brand"><span class="logo"></span><b>clickthru</b></div>
-      <h1>Ekran turu kaydet</h1>
-      <p class="sub">Başlat'a bas, sayfada akışını tıkla; her tıklama bir adım olur.</p>
-      <label for="title">Demo başlığı (opsiyonel)</label>
-      <input id="title" placeholder="Yakalanan demo" />
-      <button id="start"><span class="dot"></span>Kaydı başlat</button>
-      <p class="foot">Durdurmak için <b>Ctrl+Y</b> · iptal <b>Esc</b></p>
+
+      <div id="recView" class="hidden">
+        <h1>Kayıt sürüyor…</h1>
+        <p class="sub">Sayfada gez, tıkla, scroll yap. Bitince durdur.</p>
+        <button id="stop" class="stop"><span class="dot" style="background:#fff"></span>Kaydı durdur</button>
+        <p class="foot">veya sayfada <b>Ctrl+Y</b></p>
+      </div>
+
+      <div id="startView">
+        <h1>Ekran turu kaydet</h1>
+        <p class="sub">Tıklamaların adım, scroll'ların video olur — tek akıcı demo.</p>
+        <label for="mode">Kayıt modu</label>
+        <select id="mode">
+          <option value="interactive">İnteraktif (tık + video)</option>
+          <option value="screenshot">Yalnız ekran görüntüsü</option>
+        </select>
+        <label for="title">Demo başlığı (opsiyonel)</label>
+        <input id="title" placeholder="Yakalanan demo" />
+        <button id="start"><span class="dot"></span>Kaydı başlat</button>
+        <p class="foot">Durdur <b>Ctrl+Y</b> · iptal <b>Esc</b></p>
+      </div>
+
       <p class="err" id="err"></p>
     </div>
     <script src="popup.js"></script>

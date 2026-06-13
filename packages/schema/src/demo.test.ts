@@ -129,3 +129,39 @@ describe('metin/etiket overlay (Faz 1 — eklendi)', () => {
     expect(textOverlaySchema.safeParse({ id: 'o', text: '', x: 0.1, y: 0.1 }).success).toBe(false);
   });
 });
+
+describe('video segment alanları (uzantı video capture)', () => {
+  it('clipStart/clipEnd/poster/durationMs olan video adımı geçerli', () => {
+    const ok = isValidDemo({
+      id: 'd',
+      title: 't',
+      steps: [
+        {
+          id: 's',
+          order: 1,
+          type: 'video',
+          media: 'https://x/capture.webm',
+          clipStart: 2.5,
+          clipEnd: 7,
+          poster: 'https://x/poster.jpg',
+          durationMs: 12000,
+        },
+      ],
+    });
+    expect(ok).toBe(true);
+  });
+
+  it('negatif clipStart reddedilir', () => {
+    expect(
+      isValidDemo({
+        id: 'd',
+        title: 't',
+        steps: [{ id: 's', order: 1, type: 'video', media: 'v.webm', clipStart: -1 }],
+      }),
+    ).toBe(false);
+  });
+
+  it('clip alanları opsiyonel — eski video adımı (clip yok) hâlâ geçerli', () => {
+    expect(isValidDemo({ id: 'd', title: 't', steps: [{ id: 's', order: 1, type: 'video', media: 'v.mp4' }] })).toBe(true);
+  });
+});
