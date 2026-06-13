@@ -45,6 +45,12 @@ vi.mock('./supabase/client', () => {
   const client = {
     from: () => builder(),
     auth: { getSession: () => Promise.resolve({ data: { session: h.state.session } }) },
+    storage: {
+      from: () => ({
+        upload: () => Promise.resolve({ error: null }),
+        getPublicUrl: (p: string) => ({ data: { publicUrl: `https://store/${p}` } }),
+      }),
+    },
   };
   return { createSupabaseClient: () => client };
 });
@@ -78,6 +84,18 @@ describe('demos lib — ownership & queries', () => {
     h.state.session = { user: { id: 'U1' } };
     await saveDemo(validDemo);
     expect(h.state.cap.upsert).toMatchObject({ id: 'd1', is_public: true, owner_id: 'U1' });
+  });
+
+  it('saveDemo base64 (data:) medyayı Storage URL ile değiştirir', async () => {
+    h.state.session = { user: { id: 'U1' } };
+    const demo: Demo = {
+      id: 'd9',
+      title: 'T',
+      steps: [{ id: 'st1', order: 1, type: 'screenshot', media: 'data:image/png;base64,QQ==' }],
+    };
+    await saveDemo(demo);
+    const up = h.state.cap.upsert as { data: Demo };
+    expect(up.data.steps[0]?.media).toBe('https://store/u/d9/st1.png');
   });
 
   it('listDemos oturum yoksa boş döner ve sorgu açmaz', async () => {

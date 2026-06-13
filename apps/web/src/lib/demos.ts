@@ -2,6 +2,38 @@ import type { Demo, Step } from '@clickthru/schema';
 import { safeValidateDemo } from '@clickthru/schema';
 import { createSupabaseClient } from './supabase/client';
 import { genId } from './id';
+import { isDataUrl, uploadDataUrl } from './storage';
+
+/**
+ * Adımlardaki base64 (data:) medyayı Storage'a yükleyip URL'le değiştirir (jsonb şişmesin).
+ * Yükleme başarısızsa data URL korunur (kayıt yine de çalışır — graceful).
+ */
+async function persistInlineMedia(demo: Demo): Promise<Demo> {
+  let changed = false;
+  const steps = await Promise.all(
+    demo.steps.map(async (s): Promise<Step> => {
+      const patch: Partial<Step> = {};
+      if (isDataUrl(s.media)) {
+        try {
+          patch.media = await uploadDataUrl(`u/${demo.id}/${s.id}`, s.media);
+          changed = true;
+        } catch {
+          // data URL ile devam
+        }
+      }
+      if (isDataUrl(s.poster)) {
+        try {
+          patch.poster = await uploadDataUrl(`u/${demo.id}/${s.id}_p`, s.poster);
+          changed = true;
+        } catch {
+          // yoksay
+        }
+      }
+      return Object.keys(patch).length ? { ...s, ...patch } : s;
+    }),
+  );
+  return changed ? { ...demo, steps } : demo;
+}
 
 /** demos tablosu satırı (yalnızca okuduğumuz alanlar). */
 interface DemoRow {
@@ -99,7 +131,9 @@ export async function saveDemo(demo: Demo): Promise<void> {
 
   const supabase = createSupabaseClient();
   const uid = await currentUserId();
-  const row: Record<string, unknown> = { id: demo.id, title: demo.title, data: demo, is_public: true };
+  // base64 medyayı Storage'a taşı (jsonb şişmesin) — sonra kaydet.
+  const persisted = await persistInlineMedia(demo);
+  const row: Record<string, unknown> = { id: persisted.id, title: persisted.title, data: persisted, is_public: true };
   if (uid) row.owner_id = uid; // sahiplenme (claim); RLS check owner_id = auth.uid()
 
   const { error } = await supabase.from('demos').upsert(row);
