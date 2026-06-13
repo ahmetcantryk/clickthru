@@ -99,6 +99,16 @@ describe('editor-store — immutable düzenleme', () => {
     expect(st().demo.variables?.map((v) => v.key)).toEqual(['var2']);
   });
 
+  it('lead formu aç/konum değiştir/kapat', () => {
+    expect(st().demo.leadForm).toBeUndefined();
+    st().setLeadForm({ position: 'end', collectName: true });
+    expect(st().demo.leadForm).toMatchObject({ position: 'end', collectName: true });
+    st().updateLeadForm({ position: 'start', headline: 'Hoş geldin' });
+    expect(st().demo.leadForm).toMatchObject({ position: 'start', collectName: true, headline: 'Hoş geldin' });
+    st().setLeadForm(undefined);
+    expect(st().demo.leadForm).toBeUndefined();
+  });
+
   it('düzenleme sonrası çıktı geçerli schema JSON', () => {
     st().addStep();
     st().addCallout();
@@ -106,6 +116,7 @@ describe('editor-store — immutable düzenleme', () => {
     st().addFocus();
     st().addOverlay();
     st().addVariable();
+    st().setLeadForm({ position: 'end', collectName: true, collectCompany: true });
     expect(safeValidateDemo(st().demo).ok).toBe(true);
   });
 });

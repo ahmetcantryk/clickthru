@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calloutSchema, demoSchema, demoVariableSchema, stepTypeSchema, textOverlaySchema } from './demo';
+import { calloutSchema, demoSchema, demoVariableSchema, leadFormSchema, stepTypeSchema, textOverlaySchema } from './demo';
 import { isValidDemo, safeValidateDemo, validateDemo } from './validate';
 import { sampleDemos, sampleMixedDemo, sampleScreenshotDemo, sampleVideoDemo } from './samples';
 
@@ -37,6 +37,23 @@ describe('demoVariableSchema — kişiselleştirme değişkeni', () => {
     expect(safeValidateDemo(ok).ok).toBe(true);
     const bad = { ...sampleScreenshotDemo, variables: [{ key: '99', label: 'X' }] };
     expect(safeValidateDemo(bad).ok).toBe(false);
+  });
+});
+
+describe('leadFormSchema — lead yakalama formu', () => {
+  it('geçerli form (start/end) kabul edilir', () => {
+    expect(leadFormSchema.safeParse({ position: 'end' }).success).toBe(true);
+    expect(leadFormSchema.safeParse({ position: 'start', collectName: true, headline: 'Hi' }).success).toBe(true);
+  });
+
+  it('geçersiz position reddedilir', () => {
+    expect(leadFormSchema.safeParse({ position: 'middle' }).success).toBe(false);
+    expect(leadFormSchema.safeParse({}).success).toBe(false);
+  });
+
+  it('demo.leadForm opsiyonel; verilince doğrulanır', () => {
+    const ok = { ...sampleScreenshotDemo, leadForm: { position: 'end', collectCompany: true } };
+    expect(safeValidateDemo(ok).ok).toBe(true);
   });
 });
 

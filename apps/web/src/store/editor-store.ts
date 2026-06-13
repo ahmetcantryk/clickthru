@@ -6,6 +6,7 @@ import type {
   DemoVariable,
   FocusEase,
   Hotspot,
+  LeadForm,
   Step,
   TextOverlay,
   Wrapper,
@@ -61,6 +62,10 @@ interface EditorState {
   addVariable: () => void;
   updateVariable: (i: number, patch: Partial<DemoVariable>) => void;
   removeVariable: (i: number) => void;
+
+  // Lead yakalama formu (demo düzeyi; turdan önce/sonra).
+  setLeadForm: (form: LeadForm | undefined) => void;
+  updateLeadForm: (patch: Partial<LeadForm>) => void;
 
   addStep: () => void;
   addStepWithMedia: (media: string) => void;
@@ -162,6 +167,12 @@ export const useEditorStore = create<EditorState>((set, get) => {
     removeVariable: (i) =>
       set((st) => ({
         demo: { ...st.demo, variables: (st.demo.variables ?? []).filter((_, idx) => idx !== i) },
+      })),
+
+    setLeadForm: (form) => set((st) => ({ demo: { ...st.demo, leadForm: form } })),
+    updateLeadForm: (patch) =>
+      set((st) => ({
+        demo: { ...st.demo, leadForm: { ...(st.demo.leadForm ?? { position: 'end' }), ...patch } },
       })),
 
     addStep: () =>

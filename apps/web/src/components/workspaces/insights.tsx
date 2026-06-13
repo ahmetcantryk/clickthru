@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowDownRight, ArrowUpRight, Eye, LayoutGrid, Sigma, Users } from 'lucide-react';
 import { getViewStats, type ViewStats } from '@/lib/analytics';
+import { getLeads, type Lead } from '@/lib/leads';
 import type { DemoSummary } from '@/lib/demos';
 import { useT, type Copy } from '@/lib/i18n';
 import { AppLayout, useDemos } from '@/components/app/app-layout';
@@ -156,6 +157,64 @@ function Insights() {
           </div>
         </>
       )}
+
+      <LeadsPanel byId={byId} />
+    </div>
+  );
+}
+
+/** Lead yakalama tablosu — sahibin demolarına gelen son leadler (RLS owner; lead yoksa gizli). */
+function LeadsPanel({ byId }: { byId: Map<string, DemoSummary> }) {
+  const { t } = useT();
+  const [leads, setLeads] = useState<Lead[] | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    getLeads(100)
+      .then((l) => alive && setLeads(l))
+      .catch(() => alive && setLeads(null));
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  if (!leads || leads.length === 0) return null;
+
+  return (
+    <div className="mt-5 overflow-hidden rounded-2xl border border-hairline bg-surface">
+      <div className="flex items-center justify-between border-b border-hairline px-6 py-4">
+        <h2 className="text-[15px] font-bold text-ink">{t.insights.leadsTitle}</h2>
+        <span className="font-mono text-[12px] text-ink-faint">{leads.length}</span>
+      </div>
+      <div className="grid grid-cols-[1.4fr_1fr_auto] gap-4 px-6 py-2.5 text-[11.5px] font-semibold uppercase tracking-wide text-ink-faint">
+        <span>{t.insights.leadContact}</span>
+        <span className="truncate">{t.insights.colDemo}</span>
+        <span className="w-28 text-right">{t.insights.colLast}</span>
+      </div>
+      {leads.slice(0, 15).map((l, i) => (
+        <div
+          key={i}
+          className="grid grid-cols-[1.4fr_1fr_auto] items-center gap-4 border-t border-hairline px-6 py-3 text-[14px]"
+        >
+          <div className="min-w-0">
+            <div className="truncate font-semibold text-ink">{l.email}</div>
+            {(l.name || l.company) && (
+              <div className="truncate text-[12.5px] text-ink-faint">
+                {[l.name, l.company].filter(Boolean).join(' · ')}
+              </div>
+            )}
+          </div>
+          <a
+            href={`/play/${l.demoId}`}
+            target="_blank"
+            rel="noreferrer"
+            className="truncate text-[13px] font-medium text-ink-muted hover:text-accent"
+          >
+            {byId.get(l.demoId)?.title ?? l.demoId}
+          </a>
+          <span className="w-28 text-right text-[12.5px] text-ink-faint">{ago(l.createdAt, t)}</span>
+        </div>
+      ))}
     </div>
   );
 }

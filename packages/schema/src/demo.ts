@@ -150,6 +150,22 @@ export const demoVariableSchema = z.object({
 });
 export type DemoVariable = z.infer<typeof demoVariableSchema>;
 
+/**
+ * Lead yakalama formu (Faz 3 satış/CRM) — turdan **önce** (start) ya da **sonra** (end)
+ * görüntüleyenden e-posta toplar. E-posta her zaman istenir; ad/şirket opsiyonel.
+ * Leadler yalnız demonun sahibine görünür (RLS).
+ */
+export const leadFormSchema = z.object({
+  position: z.enum(['start', 'end']),
+  headline: z.string().min(1).optional(),
+  description: z.string().min(1).optional(),
+  /** Ad alanını da iste. */
+  collectName: z.boolean().optional(),
+  /** Şirket alanını da iste. */
+  collectCompany: z.boolean().optional(),
+});
+export type LeadForm = z.infer<typeof leadFormSchema>;
+
 /** Demo — başlık + sahne arka planı + çerçeve + sıralı adımlar. */
 export const demoSchema = z.object({
   id: z.string().min(1),
@@ -159,6 +175,8 @@ export const demoSchema = z.object({
   wrapper: wrapperSchema.optional(),
   /** Kişiselleştirme değişkenleri (opsiyonel; callout/metinde `{{key}}` olarak kullanılır). */
   variables: z.array(demoVariableSchema).optional(),
+  /** Lead yakalama formu (opsiyonel; turdan önce/sonra e-posta toplar). */
+  leadForm: leadFormSchema.optional(),
   steps: z.array(stepSchema),
 });
 export type Demo = z.infer<typeof demoSchema>;

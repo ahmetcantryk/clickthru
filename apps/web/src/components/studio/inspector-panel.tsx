@@ -202,6 +202,7 @@ function DemoEditor() {
         <p className="text-[11px] text-ink-faint">{t.studio.bgComingSoon}</p>
       </Section>
       <VariablesSection />
+      <LeadFormSection />
     </>
   );
 }
@@ -271,6 +272,62 @@ function VariablesSection() {
       >
         <Plus className="h-3.5 w-3.5" /> {t.studio.varAdd}
       </button>
+    </Section>
+  );
+}
+
+/** Lead yakalama formu — turdan önce/sonra e-posta toplama (Faz 3 satış/CRM). */
+function LeadFormSection() {
+  const { t } = useT();
+  const leadForm = useEditorStore((st) => st.demo.leadForm);
+  const setLeadForm = useEditorStore((st) => st.setLeadForm);
+  const updateLeadForm = useEditorStore((st) => st.updateLeadForm);
+
+  return (
+    <Section title={t.studio.secLead}>
+      <Toggle
+        checked={!!leadForm}
+        onChange={(on) => setLeadForm(on ? { position: 'end', collectName: true } : undefined)}
+        label={t.studio.leadEnable}
+      />
+      {leadForm && (
+        <>
+          <Field label={t.studio.leadPosition}>
+            <Segmented
+              value={leadForm.position}
+              onChange={(position) => updateLeadForm({ position })}
+              options={[
+                { value: 'start', label: t.studio.leadStart },
+                { value: 'end', label: t.studio.leadEnd },
+              ]}
+            />
+          </Field>
+          <Field label={t.studio.leadHeadline}>
+            <TextInput
+              value={leadForm.headline ?? ''}
+              onChange={(v) => updateLeadForm({ headline: v || undefined })}
+              placeholder={t.lead.defaultHeadline}
+            />
+          </Field>
+          <Field label={t.studio.leadDescription}>
+            <TextInput
+              value={leadForm.description ?? ''}
+              onChange={(v) => updateLeadForm({ description: v || undefined })}
+              placeholder={t.lead.defaultDescription}
+            />
+          </Field>
+          <Toggle
+            checked={!!leadForm.collectName}
+            onChange={(v) => updateLeadForm({ collectName: v })}
+            label={t.studio.leadCollectName}
+          />
+          <Toggle
+            checked={!!leadForm.collectCompany}
+            onChange={(v) => updateLeadForm({ collectCompany: v })}
+            label={t.studio.leadCollectCompany}
+          />
+        </>
+      )}
     </Section>
   );
 }

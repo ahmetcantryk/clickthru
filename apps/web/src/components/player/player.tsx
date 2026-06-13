@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { BrowserFrame, ScreenScene } from '@clickthru/ui';
@@ -10,6 +10,7 @@ import { resolveVars } from '@/lib/personalize';
 import { useT } from '@/lib/i18n';
 import { StepMedia } from './step-media';
 import { StepAnnotations } from './step-annotations';
+import { LeadGate } from './lead-gate';
 import { ProgressBar } from './progress-bar';
 import { cameraTransform, focusEaseDuration } from './camera';
 
@@ -45,11 +46,13 @@ export function Player({
   const init = usePlayerStore((s) => s.init);
   const next = usePlayerStore((s) => s.next);
   const prev = usePlayerStore((s) => s.prev);
+  const [leadPassed, setLeadPassed] = useState(false);
 
   const steps = demo.steps.filter((s) => !s.skip);
 
   useEffect(() => {
     init(steps.length);
+    setLeadPassed(false);
   }, [demo.id, steps.length, init]);
 
   // Export modu: adımları otomatik ilerlet (son adımda durur).
@@ -79,6 +82,12 @@ export function Player({
   const cam = cameraTransform(step.focus);
   const camDur = focusEaseDuration(step.focus?.ease);
   const isLast = safeIndex >= steps.length - 1;
+
+  // Lead kapısı: export modunda kapalı (kayıt bozulmasın); start=turdan önce, end=son adımda.
+  const lead = demo.leadForm;
+  const leadActive = !!lead && !autoAdvanceMs;
+  const showStartGate = leadActive && lead?.position === 'start' && !leadPassed;
+  const showEndGate = leadActive && lead?.position === 'end' && !leadPassed && isLast;
 
   return (
     <div className="relative flex h-full w-full flex-col overflow-hidden rounded-2xl" style={{ background: THEATER }}>
@@ -159,6 +168,11 @@ export function Player({
         <div className="absolute bottom-6 left-1/2 z-10 w-[min(760px,calc(100%-48px))] -translate-x-1/2">
           <ProgressBar steps={steps} />
         </div>
+      )}
+
+      {/* lead yakalama kapısı (turdan önce/sonra) */}
+      {(showStartGate || showEndGate) && lead && (
+        <LeadGate demoId={demo.id} form={lead} onContinue={() => setLeadPassed(true)} />
       )}
     </div>
   );
