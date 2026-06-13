@@ -16,13 +16,22 @@ export interface DemoSummary {
   type: Step['type'];
   steps: number;
   updatedAt?: string;
+  /** Örnek (seed) demo mu — sahip değil, silinemez/yeniden adlandırılamaz. */
+  sample?: boolean;
 }
 
 interface ListRow {
   id: string;
   title: string | null;
   data: unknown;
-  ts?: string | null;
+  updated_at?: string | null;
+}
+
+/** Aktif oturumdaki kullanıcı id'si (yoksa null). */
+async function currentUserId(): Promise<string | null> {
+  const supabase = createSupabaseClient();
+  const { data } = await supabase.auth.getSession();
+  return data.session?.user?.id ?? null;
 }
 
 /** Boş bir demo (Sıfırdan başla) — editör boş durumla açılır. */
@@ -37,16 +46,21 @@ export function blankDemo(): Demo {
 }
 
 /**
- * Son demoları getirir (workspaces). Şema doğrulamasından geçenler özetlenir.
- * Hata/boş → boş dizi (UI örnek demolara düşer).
+ * Giriş yapmış kullanıcının demolarını getirir (workspaces).
+ * RLS zaten public+owner döndürür; burada **yalnızca sahibinkini** filtreleriz.
+ * Oturum yoksa boş dizi (UI örnek demolara düşer).
  */
 export async function listDemos(): Promise<DemoSummary[]> {
   const supabase = createSupabaseClient();
+  const uid = await currentUserId();
+  if (!uid) return [];
+
   const { data, error } = await supabase
     .from('demos')
-    .select('id,title,data,ts')
-    .order('ts', { ascending: false })
-    .limit(24);
+    .select('id,title,data,updated_at')
+    .eq('owner_id', uid)
+    .order('updated_at', { ascending: false })
+    .limit(48);
 
   if (error || !data) return [];
 
@@ -62,7 +76,7 @@ export async function listDemos(): Promise<DemoSummary[]> {
         thumbnail: first?.type === 'screenshot' ? first.media : undefined,
         type: first?.type ?? 'screenshot',
         steps: d.steps.length,
-        updatedAt: row.ts ?? undefined,
+        updatedAt: row.updated_at ?? undefined,
       };
     })
     .filter((d): d is DemoSummary => d !== null);
@@ -73,7 +87,8 @@ function getErrorMessage(error: unknown): string {
 }
 
 /**
- * Demo'yu Supabase'e yazar (upsert — aynı id varsa günceller).
+ * Demo'yu Supabase'e yazar (upsert). `owner_id` aktif kullanıcıya set edilir —
+ * yeni demo sahiplenir, uzantının oluşturduğu sahipsiz demo da ilk kayıtta sahiplenir.
  * Sınırda doğrulama: geçersiz demo asla kaydedilmez (fail-fast).
  */
 export async function saveDemo(demo: Demo): Promise<void> {
@@ -83,16 +98,33 @@ export async function saveDemo(demo: Demo): Promise<void> {
   }
 
   const supabase = createSupabaseClient();
-  const { error } = await supabase
-    .from('demos')
-    .upsert({ id: demo.id, title: demo.title, data: demo, is_public: true });
+  const uid = await currentUserId();
+  const row: Record<string, unknown> = { id: demo.id, title: demo.title, data: demo, is_public: true };
+  if (uid) row.owner_id = uid; // sahiplenme (claim); RLS check owner_id = auth.uid()
 
+  const { error } = await supabase.from('demos').upsert(row);
   if (error) throw new Error(`Demo kaydedilemedi: ${error.message}`);
+}
+
+/** Demoyu sil (RLS: yalnızca sahip). */
+export async function deleteDemo(id: string): Promise<void> {
+  const supabase = createSupabaseClient();
+  const { error } = await supabase.from('demos').delete().eq('id', id);
+  if (error) throw new Error(`Demo silinemedi: ${error.message}`);
+}
+
+/** Demoyu yeniden adlandır (RLS: yalnızca sahip). */
+export async function renameDemo(id: string, title: string): Promise<void> {
+  const clean = title.trim();
+  if (!clean) throw new Error('Başlık boş olamaz');
+  const supabase = createSupabaseClient();
+  const { error } = await supabase.from('demos').update({ title: clean }).eq('id', id);
+  if (error) throw new Error(`Demo yeniden adlandırılamadı: ${error.message}`);
 }
 
 /**
  * id'ye göre demo getirir; bulunamazsa null. Dönen JSON şemayla doğrulanır
- * (güvenilmeyen kaynak — kötü kayıt player'ı bozmasın).
+ * (güvenilmeyen kaynak — kötü kayıt player'ı bozmasın). RLS: public veya sahip.
  */
 export async function getDemo(id: string): Promise<Demo | null> {
   const supabase = createSupabaseClient();

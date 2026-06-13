@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { sampleDemos } from '@clickthru/schema';
 import { AuthGate, getProfile, getSession, signOut } from '@/lib/auth';
@@ -13,8 +13,13 @@ import { CommandPalette } from './command-palette';
 const NewDemoCtx = createContext<() => void>(() => {});
 export const useNewDemo = () => useContext(NewDemoCtx);
 
-const DemosCtx = createContext<DemoSummary[] | null>(null);
-export const useDemos = () => useContext(DemosCtx);
+interface DemosCtxValue {
+  demos: DemoSummary[] | null;
+  reload: () => void;
+}
+const DemosCtx = createContext<DemosCtxValue>({ demos: null, reload: () => {} });
+export const useDemos = () => useContext(DemosCtx).demos;
+export const useDemosReload = () => useContext(DemosCtx).reload;
 
 function sampleSummaries(): DemoSummary[] {
   return sampleDemos.map((d) => ({
@@ -24,6 +29,7 @@ function sampleSummaries(): DemoSummary[] {
     type: d.steps[0]?.type ?? 'screenshot',
     steps: d.steps.length,
     updatedAt: undefined,
+    sample: true,
   }));
 }
 
@@ -48,15 +54,15 @@ function AppLayoutInner({ active, children }: { active: AppSection; children: Re
   const workspace = profile?.workspace || (user ? t.workspaceOf(user.name.split(' ')[0]) : t.onboarding.yourWs);
   const brandColor = profile?.brandColor || '#2142E7';
 
-  useEffect(() => {
-    let alive = true;
+  const loadDemos = useCallback(() => {
     listDemos()
-      .then((d) => alive && setDemos(d.length ? d : sampleSummaries()))
-      .catch(() => alive && setDemos(sampleSummaries()));
-    return () => {
-      alive = false;
-    };
+      .then((d) => setDemos(d.length ? d : sampleSummaries()))
+      .catch(() => setDemos(sampleSummaries()));
   }, []);
+
+  useEffect(() => {
+    loadDemos();
+  }, [loadDemos]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -78,7 +84,7 @@ function AppLayoutInner({ active, children }: { active: AppSection; children: Re
 
   return (
     <NewDemoCtx.Provider value={() => setModal(true)}>
-      <DemosCtx.Provider value={demos}>
+      <DemosCtx.Provider value={{ demos, reload: loadDemos }}>
         <div className="flex h-screen bg-canvas font-sans text-ink">
           <AppSidebar
             active={active}

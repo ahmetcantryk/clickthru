@@ -10,6 +10,7 @@ const en = {
   nav: { home: 'Home', library: 'Library', insights: 'Insights', free: 'Free plan', searchPh: 'Search' },
   account: { settings: 'Account settings', billing: 'Billing', toLight: 'Light theme', toDark: 'Dark theme', language: 'Türkçe', trash: 'Trash', signOut: 'Log out', wsSettings: 'Workspace settings', invite: 'Invite team', newDemo: 'New demo' },
   checklist: { title: 'Get set up', createProfile: 'Create profile', firstDemo: 'Create your first demo', addCallout: 'Add a callout', shareDemo: 'Share a demo' },
+  card: { options: 'Demo options', rename: 'Rename', delete: 'Delete', renamePrompt: 'New name', deleteConfirm: 'Delete this demo? This cannot be undone.' },
   workspaceOf: (name: string) => `${name}'s workspace`,
   time: {
     recently: 'edited recently',
@@ -261,6 +262,7 @@ const tr: Copy = {
   nav: { home: 'Ana sayfa', library: 'Kitaplık', insights: 'İçgörüler', free: 'Free plan', searchPh: 'Ara' },
   account: { settings: 'Hesap ayarları', billing: 'Faturalandırma', toLight: 'Açık tema', toDark: 'Koyu tema', language: 'English', trash: 'Çöp kutusu', signOut: 'Çıkış yap', wsSettings: 'Çalışma alanı ayarları', invite: 'Ekip davet et', newDemo: 'Yeni demo' },
   checklist: { title: 'Hazır ol', createProfile: 'Profil oluştur', firstDemo: 'İlk demoyu oluştur', addCallout: 'Bir callout ekle', shareDemo: 'Demoyu paylaş' },
+  card: { options: 'Demo seçenekleri', rename: 'Yeniden adlandır', delete: 'Sil', renamePrompt: 'Yeni ad', deleteConfirm: 'Bu demo silinsin mi? Geri alınamaz.' },
   workspaceOf: (name: string) => `${name}'in alanı`,
   time: {
     recently: 'geçenlerde düzenlendi',

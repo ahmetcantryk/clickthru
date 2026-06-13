@@ -1,7 +1,10 @@
 'use client';
 
-import { Play, Share2 } from 'lucide-react';
-import type { DemoSummary } from '@/lib/demos';
+import { useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { MoreHorizontal, Pencil, Play, Share2, Trash2 } from 'lucide-react';
+import { deleteDemo, getErrorMessage, renameDemo, type DemoSummary } from '@/lib/demos';
+import { useDemosReload } from '@/components/app/app-layout';
 import { useT, type Copy } from '@/lib/i18n';
 
 function ago(iso: string | undefined, t: Copy): string {
@@ -42,7 +45,81 @@ export function DemoCard({ demo, onOpen }: { demo: DemoSummary; onOpen: () => vo
         </div>
         <a href={`/play/${demo.id}`} target="_blank" rel="noreferrer" aria-label="Play" className="flex h-7 w-7 flex-none items-center justify-center rounded-md text-ink-faint hover:bg-surface-subtle hover:text-ink"><Play className="h-3.5 w-3.5" /></a>
         <a href={`/play/${demo.id}`} target="_blank" rel="noreferrer" aria-label="Share" className="flex h-7 w-7 flex-none items-center justify-center rounded-md text-ink-faint hover:bg-surface-subtle hover:text-ink"><Share2 className="h-3.5 w-3.5" /></a>
+        {!demo.sample && <DemoMenu demo={demo} />}
       </div>
     </div>
+  );
+}
+
+function DemoMenu({ demo }: { demo: DemoSummary }) {
+  const { t } = useT();
+  const reload = useDemosReload();
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const [busy, setBusy] = useState(false);
+
+  function toggle(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (pos) {
+      setPos(null);
+      return;
+    }
+    const r = btnRef.current?.getBoundingClientRect();
+    if (r) setPos({ top: r.bottom + 6, left: Math.max(8, r.right - 168) });
+  }
+
+  async function run(fn: () => Promise<void>) {
+    setPos(null);
+    setBusy(true);
+    try {
+      await fn();
+      reload();
+    } catch (err) {
+      window.alert(getErrorMessage(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function onRename() {
+    const name = window.prompt(t.card.renamePrompt, demo.title);
+    if (name && name.trim() && name.trim() !== demo.title) void run(() => renameDemo(demo.id, name));
+  }
+
+  function onDelete() {
+    if (window.confirm(t.card.deleteConfirm)) void run(() => deleteDemo(demo.id));
+  }
+
+  return (
+    <>
+      <button
+        ref={btnRef}
+        type="button"
+        aria-label={t.card.options}
+        onClick={toggle}
+        disabled={busy}
+        className="flex h-7 w-7 flex-none items-center justify-center rounded-md text-ink-faint hover:bg-surface-subtle hover:text-ink"
+      >
+        <MoreHorizontal className="h-3.5 w-3.5" />
+      </button>
+      {pos &&
+        createPortal(
+          <>
+            <div className="fixed inset-0 z-[60]" onClick={() => setPos(null)} />
+            <div
+              style={{ position: 'fixed', top: pos.top, left: pos.left }}
+              className="z-[61] w-40 overflow-hidden rounded-xl border border-hairline bg-surface p-1.5 shadow-soft"
+            >
+              <button type="button" onClick={onRename} className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13px] font-medium text-ink hover:bg-surface-subtle">
+                <Pencil className="h-3.5 w-3.5" /> {t.card.rename}
+              </button>
+              <button type="button" onClick={onDelete} className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13px] font-medium text-red-500 hover:bg-red-500/10">
+                <Trash2 className="h-3.5 w-3.5" /> {t.card.delete}
+              </button>
+            </div>
+          </>,
+          document.body,
+        )}
+    </>
   );
 }
