@@ -31,10 +31,13 @@ export async function POST(req: Request): Promise<Response> {
   const steps = demo ? demo.steps.filter((s) => !s.skip).length : 6;
   const durationMs = steps * PER_STEP_MS + 1500;
 
+  const headers: Record<string, string> = { 'content-type': 'application/json' };
+  if (process.env.RENDER_SECRET) headers.authorization = `Bearer ${process.env.RENDER_SECRET}`;
+
   try {
     const r = await fetch(`${worker.replace(/\/$/, '')}/render`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers,
       body: JSON.stringify({ url, format, durationMs, width: 1280, height: 800 }),
     });
     if (!r.ok) {

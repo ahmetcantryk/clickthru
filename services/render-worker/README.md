@@ -42,6 +42,37 @@ Bağlantı + HTML embed çalışmaya devam eder; video/GIF "yapılandırılmadı
 ```
 → dosyayı (binary) döndürür. `RENDER_SECRET` ayarlıysa `Authorization: Bearer <secret>` gerekir.
 
-## Deploy notu
-Playwright + ffmpeg gerektirir → Vercel serverless'a uygun değil; bir VPS / Fly.io /
-Render.com / Docker'a deploy et. (Playwright resmi Docker imajı + ffmpeg en kolayı.)
+## Deploy (Docker)
+Playwright + ffmpeg gerektirir → Vercel serverless'a UYGUN DEĞİL. Bu klasördeki
+`Dockerfile` Chromium + ffmpeg dahil her şeyi içerir; herhangi bir Docker host'una çıkar.
+
+**Fly.io** (en kolay; `fly.toml` hazır):
+```bash
+cd services/render-worker
+fly launch --no-deploy        # app adını oluştur (fly.toml'daki "clickthru-render")
+fly secrets set RENDER_SECRET=$(openssl rand -hex 16)   # opsiyonel ama önerilir
+fly deploy
+# → https://clickthru-render.fly.dev   (sağlık: /health)
+```
+
+**Railway / Render.com:** "Deploy from Dockerfile" / root = `services/render-worker`.
+Port'u env `PORT` ile verirler (server `process.env.PORT` okur). Gerekirse `RENDER_SECRET` ekle.
+
+**Lokal Docker:**
+```bash
+docker build -t clickthru-render services/render-worker
+docker run -p 8080:8080 -e RENDER_SECRET=dev clickthru-render
+```
+
+### Web'e bağla (canlıya alma adımı)
+Deploy'dan sonra **Vercel → Project → Settings → Environment Variables**:
+```
+RENDER_WORKER_URL = https://clickthru-render.fly.dev
+RENDER_SECRET     = <fly secrets ile aynı değer>     # ayarladıysan
+```
+Redeploy et → Studio **Paylaş & dışa aktar → Video & GIF** canlıda çalışır.
+`apps/web/src/app/api/export/route.ts` bu URL'e proxy yapar; URL yoksa 503 ("yapılandırılmadı")
+döner ama Bağlantı + HTML embed çalışmaya devam eder.
+
+> `/api/export`, `RENDER_SECRET` env'i ayarlıysa otomatik `Authorization: Bearer ...`
+> gönderir — worker ile aynı secret'i Vercel'e ekle, yeter.
