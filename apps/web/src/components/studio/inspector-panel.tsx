@@ -11,7 +11,9 @@ import {
   MoveHorizontal,
   MoveVertical,
   PanelRightClose,
+  Plus,
   Square,
+  Trash2,
   Type,
 } from 'lucide-react';
 import { cn } from '@clickthru/ui';
@@ -199,7 +201,77 @@ function DemoEditor() {
         </div>
         <p className="text-[11px] text-ink-faint">{t.studio.bgComingSoon}</p>
       </Section>
+      <VariablesSection />
     </>
+  );
+}
+
+/** Anahtarı `{{key}}` token regex'ine uyacak şekilde temizler (harfle başlar, harf/rakam/_). */
+function sanitizeKey(s: string): string {
+  return s
+    .replace(/[^a-zA-Z0-9_]/g, '')
+    .replace(/^[^a-zA-Z]+/, '')
+    .slice(0, 32);
+}
+
+/** Kişiselleştirme değişkenleri — callout/metinde `{{key}}`, oynatmada link/`default` ile çözülür. */
+function VariablesSection() {
+  const { t } = useT();
+  const variables = useEditorStore((st) => st.demo.variables);
+  const addVariable = useEditorStore((st) => st.addVariable);
+  const updateVariable = useEditorStore((st) => st.updateVariable);
+  const removeVariable = useEditorStore((st) => st.removeVariable);
+  const rows = variables ?? [];
+
+  return (
+    <Section title={t.studio.secVariables}>
+      <p className="text-[11px] leading-relaxed text-ink-faint">{t.studio.variablesHint}</p>
+      {rows.length > 0 && (
+        <div className="space-y-2.5">
+          {rows.map((v, i) => (
+            <div key={i} className="space-y-2 rounded-xl border border-hairline bg-surface-subtle p-2.5">
+              <div className="flex items-center gap-1.5">
+                <span className="select-none font-mono text-[11px] text-ink-faint">{'{{'}</span>
+                <input
+                  value={v.key}
+                  onChange={(e) => updateVariable(i, { key: sanitizeKey(e.target.value) })}
+                  placeholder="key"
+                  className="h-7 w-full rounded-md border border-hairline bg-surface px-2 font-mono text-xs text-ink outline-none focus:border-accent-ring focus:ring-2 focus:ring-accent-ring"
+                />
+                <span className="select-none font-mono text-[11px] text-ink-faint">{'}}'}</span>
+                <button
+                  type="button"
+                  onClick={() => removeVariable(i)}
+                  aria-label={t.studio.varRemove}
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-ink-faint hover:bg-danger-soft hover:text-danger"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              <input
+                value={v.label}
+                onChange={(e) => updateVariable(i, { label: e.target.value })}
+                placeholder={t.studio.varLabel}
+                className="h-7 w-full rounded-md border border-hairline bg-surface px-2 text-xs text-ink outline-none focus:border-accent-ring focus:ring-2 focus:ring-accent-ring"
+              />
+              <input
+                value={v.default ?? ''}
+                onChange={(e) => updateVariable(i, { default: e.target.value })}
+                placeholder={t.studio.varDefault}
+                className="h-7 w-full rounded-md border border-hairline bg-surface px-2 text-xs text-ink outline-none focus:border-accent-ring focus:ring-2 focus:ring-accent-ring"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+      <button
+        type="button"
+        onClick={addVariable}
+        className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-accent-ring py-1.5 text-xs font-medium text-accent transition-colors hover:bg-accent-muted"
+      >
+        <Plus className="h-3.5 w-3.5" /> {t.studio.varAdd}
+      </button>
+    </Section>
   );
 }
 

@@ -3,6 +3,7 @@ import type {
   BoxStyle,
   Callout,
   Demo,
+  DemoVariable,
   FocusEase,
   Hotspot,
   Step,
@@ -55,6 +56,11 @@ interface EditorState {
   setTitle: (t: string) => void;
   setDemoBackground: (c: string) => void;
   setWrapper: (w: Wrapper) => void;
+
+  // Kişiselleştirme değişkenleri (demo düzeyi; callout/metinde `{{key}}`).
+  addVariable: () => void;
+  updateVariable: (i: number, patch: Partial<DemoVariable>) => void;
+  removeVariable: (i: number) => void;
 
   addStep: () => void;
   addStepWithMedia: (media: string) => void;
@@ -139,6 +145,24 @@ export const useEditorStore = create<EditorState>((set, get) => {
     setTitle: (t) => set((st) => ({ demo: { ...st.demo, title: t } })),
     setDemoBackground: (c) => set((st) => ({ demo: { ...st.demo, defaultBackground: c } })),
     setWrapper: (w) => set((st) => ({ demo: { ...st.demo, wrapper: w } })),
+
+    addVariable: () =>
+      set((st) => {
+        const n = (st.demo.variables?.length ?? 0) + 1;
+        const v: DemoVariable = { key: `var${n}`, label: `Variable ${n}`, default: '' };
+        return { demo: { ...st.demo, variables: [...(st.demo.variables ?? []), v] } };
+      }),
+    updateVariable: (i, patch) =>
+      set((st) => ({
+        demo: {
+          ...st.demo,
+          variables: (st.demo.variables ?? []).map((v, idx) => (idx === i ? { ...v, ...patch } : v)),
+        },
+      })),
+    removeVariable: (i) =>
+      set((st) => ({
+        demo: { ...st.demo, variables: (st.demo.variables ?? []).filter((_, idx) => idx !== i) },
+      })),
 
     addStep: () =>
       set((st) => {

@@ -87,12 +87,25 @@ describe('editor-store — immutable düzenleme', () => {
     expect(st().demo.steps[0]?.textOverlays?.length ?? 0).toBe(0);
   });
 
+  it('kişiselleştirme değişkeni ekle/güncelle/sil', () => {
+    st().addVariable();
+    expect(st().demo.variables?.length).toBe(1);
+    expect(st().demo.variables?.[0]?.key).toBe('var1');
+    st().updateVariable(0, { key: 'company', label: 'Şirket', default: 'Acme' });
+    expect(st().demo.variables?.[0]).toMatchObject({ key: 'company', label: 'Şirket', default: 'Acme' });
+    st().addVariable();
+    expect(st().demo.variables?.[1]?.key).toBe('var2');
+    st().removeVariable(0);
+    expect(st().demo.variables?.map((v) => v.key)).toEqual(['var2']);
+  });
+
   it('düzenleme sonrası çıktı geçerli schema JSON', () => {
     st().addStep();
     st().addCallout();
     st().addHotspot();
     st().addFocus();
     st().addOverlay();
+    st().addVariable();
     expect(safeValidateDemo(st().demo).ok).toBe(true);
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calloutSchema, demoSchema, stepTypeSchema, textOverlaySchema } from './demo';
+import { calloutSchema, demoSchema, demoVariableSchema, stepTypeSchema, textOverlaySchema } from './demo';
 import { isValidDemo, safeValidateDemo, validateDemo } from './validate';
 import { sampleDemos, sampleMixedDemo, sampleScreenshotDemo, sampleVideoDemo } from './samples';
 
@@ -17,6 +17,26 @@ describe('demoSchema — geçerli örnekler', () => {
 
   it('karışık demo sırası screenshot → video → screenshot', () => {
     expect(sampleMixedDemo.steps.map((s) => s.type)).toEqual(['screenshot', 'video', 'screenshot']);
+  });
+});
+
+describe('demoVariableSchema — kişiselleştirme değişkeni', () => {
+  it('geçerli anahtar/etiket kabul edilir', () => {
+    expect(demoVariableSchema.safeParse({ key: 'company', label: 'Şirket', default: 'Acme' }).success).toBe(true);
+    expect(demoVariableSchema.safeParse({ key: 'first_name', label: 'Ad' }).success).toBe(true);
+  });
+
+  it('rakamla başlayan/boşluklu/boş anahtar reddedilir', () => {
+    expect(demoVariableSchema.safeParse({ key: '1x', label: 'A' }).success).toBe(false);
+    expect(demoVariableSchema.safeParse({ key: 'a b', label: 'A' }).success).toBe(false);
+    expect(demoVariableSchema.safeParse({ key: '', label: 'A' }).success).toBe(false);
+  });
+
+  it('demo.variables opsiyonel; verilince doğrulanır', () => {
+    const ok = { ...sampleScreenshotDemo, variables: [{ key: 'name', label: 'Ad', default: 'there' }] };
+    expect(safeValidateDemo(ok).ok).toBe(true);
+    const bad = { ...sampleScreenshotDemo, variables: [{ key: '99', label: 'X' }] };
+    expect(safeValidateDemo(bad).ok).toBe(false);
   });
 });
 

@@ -16,12 +16,15 @@ export function StepAnnotations({
   onBack,
   showNext,
   showBack,
+  resolve = (s) => s,
 }: {
   step: Step;
   onNext: () => void;
   onBack: () => void;
   showNext: boolean;
   showBack: boolean;
+  /** Kişiselleştirme: `{{key}}` token'larını çözer (varsayılan: değiştirmez). */
+  resolve?: (s: string) => string;
 }) {
   const { t } = useT();
   const f = step.focus;
@@ -40,7 +43,7 @@ export function StepAnnotations({
       {step.textOverlays?.map((o) => {
         const p = project(o.x, o.y, f);
         return (
-          <TextLabel key={o.id} text={o.text} x={p.x} y={p.y} size={o.size} color={o.color} style={o.style} />
+          <TextLabel key={o.id} text={resolve(o.text)} x={p.x} y={p.y} size={o.size} color={o.color} style={o.style} />
         );
       })}
 
@@ -55,8 +58,8 @@ export function StepAnnotations({
           x={cp.x}
           y={cp.y}
           pointer={callout.pointer ?? 'bottom'}
-          title={callout.title}
-          body={callout.body}
+          title={callout.title != null ? resolve(callout.title) : undefined}
+          body={callout.body != null ? resolve(callout.body) : undefined}
           width={callout.width}
           height={callout.height}
           style={callout.style}

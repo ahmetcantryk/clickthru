@@ -6,6 +6,7 @@ import { X } from 'lucide-react';
 import { BrowserFrame, ScreenScene } from '@clickthru/ui';
 import type { Demo } from '@clickthru/schema';
 import { usePlayerStore } from '@/store/player-store';
+import { resolveVars } from '@/lib/personalize';
 import { useT } from '@/lib/i18n';
 import { StepMedia } from './step-media';
 import { StepAnnotations } from './step-annotations';
@@ -26,6 +27,7 @@ export function Player({
   onClose,
   hideControls = false,
   autoAdvanceMs,
+  vars,
 }: {
   demo: Demo;
   onClose?: () => void;
@@ -33,8 +35,12 @@ export function Player({
   hideControls?: boolean;
   /** Verilirse adımlar bu aralıkla otomatik ilerler (export kaydı için). */
   autoAdvanceMs?: number;
+  /** Kişiselleştirme override'ları (kişiye özel link `?key=değer`). */
+  vars?: Record<string, string>;
 }) {
   const { t } = useT();
+  // `{{key}}` token'larını override → default ile çöz (callout/metin/başlık).
+  const resolve = (s: string) => resolveVars(s, demo.variables, vars);
   const index = usePlayerStore((s) => s.index);
   const init = usePlayerStore((s) => s.init);
   const next = usePlayerStore((s) => s.next);
@@ -83,7 +89,7 @@ export function Player({
             <path d="M2 2.5L11.5 7.5L7 8.2L9.2 12L7.4 12.9L5.2 9.1L2 11.5z" fill="#fff" />
           </svg>
         </span>
-        <span className="text-[13.5px] font-semibold text-white/85">{demo.title}</span>
+        <span className="text-[13.5px] font-semibold text-white/85">{resolve(demo.title)}</span>
       </div>
       {onClose && (
         <button
@@ -138,6 +144,7 @@ export function Player({
                       onBack={prev}
                       showNext={!isLast}
                       showBack={safeIndex > 0}
+                      resolve={resolve}
                     />
                   </motion.div>
                 </AnimatePresence>

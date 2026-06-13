@@ -138,6 +138,18 @@ export type Step = z.infer<typeof stepSchema>;
 export const wrapperSchema = z.enum(['browser', 'dark', 'none']);
 export type Wrapper = z.infer<typeof wrapperSchema>;
 
+/**
+ * Kişiselleştirme değişkeni (Faz 3 satış) — callout/metin içinde `{{key}}` token'ı.
+ * Oynatmada `?key=değer` (kişiye özel link) ile, yoksa `default` ile çözülür.
+ * `key` token eşleşmesi için harf/rakam/altçizgi; `label` editörde gösterilir.
+ */
+export const demoVariableSchema = z.object({
+  key: z.string().regex(/^[a-zA-Z][a-zA-Z0-9_]*$/, 'değişken anahtarı harfle başlamalı (harf/rakam/_)'),
+  label: z.string().min(1),
+  default: z.string().optional(),
+});
+export type DemoVariable = z.infer<typeof demoVariableSchema>;
+
 /** Demo — başlık + sahne arka planı + çerçeve + sıralı adımlar. */
 export const demoSchema = z.object({
   id: z.string().min(1),
@@ -145,6 +157,8 @@ export const demoSchema = z.object({
   /** Sahne arka planı (renk veya css gradient; adım kendi background'ını vermezse bu). */
   defaultBackground: z.string().min(1).optional(),
   wrapper: wrapperSchema.optional(),
+  /** Kişiselleştirme değişkenleri (opsiyonel; callout/metinde `{{key}}` olarak kullanılır). */
+  variables: z.array(demoVariableSchema).optional(),
   steps: z.array(stepSchema),
 });
 export type Demo = z.infer<typeof demoSchema>;

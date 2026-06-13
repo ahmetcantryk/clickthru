@@ -123,7 +123,7 @@ export function Studio({ initialDemo }: { initialDemo?: Demo }) {
       </div>
 
       {preview && <PreviewOverlay demo={demo} onClose={() => setPreview(false)} />}
-      {shareId && <ExportDialog demoId={shareId} onClose={() => setShareId(null)} />}
+      {shareId && <ExportDialog demoId={shareId} variables={demo.variables} onClose={() => setShareId(null)} />}
     </div>
   );
 }

@@ -1,16 +1,26 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Check, Code2, Copy, Download, ExternalLink, Film, Link2, X } from 'lucide-react';
+import { Check, Code2, Copy, Download, ExternalLink, Film, Link2, UserRound, X } from 'lucide-react';
 import { cn } from '@clickthru/ui';
+import type { DemoVariable } from '@clickthru/schema';
+import { personalizedQuery } from '@/lib/personalize';
 import { useT } from '@/lib/i18n';
 
-type Tab = 'link' | 'embed' | 'video';
+type Tab = 'link' | 'personalize' | 'embed' | 'video';
 type Format = 'mp4' | 'gif';
 type VideoState = 'idle' | 'rendering' | 'done' | 'unconfigured' | 'error';
 
-/** Paylaş & dışa aktar — link · HTML embed · video/GIF (sunucu-taraflı). */
-export function ExportDialog({ demoId, onClose }: { demoId: string; onClose: () => void }) {
+/** Paylaş & dışa aktar — link · kişiselleştir · HTML embed · video/GIF (sunucu-taraflı). */
+export function ExportDialog({
+  demoId,
+  variables,
+  onClose,
+}: {
+  demoId: string;
+  variables?: DemoVariable[];
+  onClose: () => void;
+}) {
   const { t } = useT();
   const [origin, setOrigin] = useState('');
   const [tab, setTab] = useState<Tab>('link');
@@ -20,9 +30,13 @@ export function ExportDialog({ demoId, onClose }: { demoId: string; onClose: () 
   const playUrl = `${origin}/play/${demoId}`;
   const embedUrl = `${origin}/embed/${demoId}`;
   const snippet = `<iframe src="${embedUrl}" width="100%" height="450" style="border:0;border-radius:16px;overflow:hidden" loading="lazy" allow="fullscreen"></iframe>`;
+  const hasVars = !!variables && variables.length > 0;
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
     { key: 'link', label: t.exportDialog.tabs.link, icon: <Link2 className="h-4 w-4" /> },
+    ...(hasVars
+      ? [{ key: 'personalize' as const, label: t.exportDialog.tabs.personalize, icon: <UserRound className="h-4 w-4" /> }]
+      : []),
     { key: 'embed', label: t.exportDialog.tabs.embed, icon: <Code2 className="h-4 w-4" /> },
     { key: 'video', label: t.exportDialog.tabs.video, icon: <Film className="h-4 w-4" /> },
   ];
@@ -53,6 +67,7 @@ export function ExportDialog({ demoId, onClose }: { demoId: string; onClose: () 
 
         <div className="mt-5">
           {tab === 'link' && <LinkTab url={playUrl} />}
+          {tab === 'personalize' && <PersonalizeTab playUrl={playUrl} variables={variables ?? []} />}
           {tab === 'embed' && <EmbedTab snippet={snippet} embedUrl={embedUrl} />}
           {tab === 'video' && <VideoTab demoId={demoId} />}
         </div>
@@ -91,6 +106,49 @@ function LinkTab({ url }: { url: string }) {
       <CopyField value={url} />
       <div className="mt-4 flex justify-end">
         <a href={url} target="_blank" rel="noreferrer" className="inline-flex h-9 items-center gap-2 rounded-lg border border-hairline bg-surface-subtle px-3.5 text-[13px] font-semibold text-ink hover:bg-surface-raised">
+          <ExternalLink className="h-4 w-4" /> {t.exportDialog.open}
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function PersonalizeTab({ playUrl, variables }: { playUrl: string; variables: DemoVariable[] }) {
+  const { t } = useT();
+  const [values, setValues] = useState<Record<string, string>>({});
+  const personalized = `${playUrl}${personalizedQuery(values)}`;
+  return (
+    <div>
+      <p className="mb-3 text-xs text-ink-muted">{t.exportDialog.personalizeDesc}</p>
+      <div className="space-y-2.5">
+        {variables.map((v) => (
+          <div key={v.key} className="space-y-1">
+            <label className="flex items-center gap-1.5 text-xs font-medium text-ink-muted">
+              {v.label}
+              <span className="font-mono text-[10px] text-ink-faint">{`{{${v.key}}}`}</span>
+            </label>
+            <input
+              value={values[v.key] ?? ''}
+              onChange={(e) => setValues((s) => ({ ...s, [v.key]: e.target.value }))}
+              placeholder={
+                v.default ? `${t.exportDialog.personalizeDefault}: ${v.default}` : t.exportDialog.personalizePlaceholder
+              }
+              className="h-9 w-full rounded-lg border border-hairline bg-surface px-3 text-sm text-ink outline-none focus:border-accent-ring focus:ring-2 focus:ring-accent-ring"
+            />
+          </div>
+        ))}
+      </div>
+      <p className="mb-2 mt-4 text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
+        {t.exportDialog.personalizeLink}
+      </p>
+      <CopyField value={personalized} />
+      <div className="mt-4 flex justify-end">
+        <a
+          href={personalized}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex h-9 items-center gap-2 rounded-lg border border-hairline bg-surface-subtle px-3.5 text-[13px] font-semibold text-ink hover:bg-surface-raised"
+        >
           <ExternalLink className="h-4 w-4" /> {t.exportDialog.open}
         </a>
       </div>
