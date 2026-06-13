@@ -45,5 +45,33 @@ describe('analytics aggregate — gerçek görüntülenme istatistiği', () => {
     expect(s.total).toBe(0);
     expect(s.byDemo).toEqual([]);
     expect(s.trend).toHaveLength(30);
+    expect(s.completionRate).toBe(0);
+  });
+});
+
+describe('analytics aggregate — tamamlanma (event)', () => {
+  const rows = [
+    { demo_id: 'a', viewed_at: at(1), session: 's1', event: 'view' },
+    { demo_id: 'a', viewed_at: at(1), session: 's2', event: 'view' },
+    { demo_id: 'a', viewed_at: at(1), session: 's1', event: 'complete' },
+    { demo_id: 'b', viewed_at: at(2), session: 's3', event: 'view' },
+    { demo_id: 'b', viewed_at: at(2), session: 's3', event: 'complete' },
+  ];
+
+  it('complete olayları view sayımına girmez', () => {
+    const s = aggregate(rows, 10, now);
+    expect(s.total).toBe(3); // a:2 + b:1 view; complete'ler hariç
+    expect(s.unique).toBe(3); // s1, s2, s3
+  });
+
+  it('completionRate = tamamlayan tekil / görüntüleyen tekil', () => {
+    // tamamlayan {s1, s3} = 2, görüntüleyen 3 → 67
+    expect(aggregate(rows, 10, now).completionRate).toBe(67);
+  });
+
+  it('byDemo.completion demo başına oran', () => {
+    const s = aggregate(rows, 10, now);
+    expect(s.byDemo.find((d) => d.demoId === 'a')?.completion).toBe(50); // s1,s2 gördü; s1 tamamladı
+    expect(s.byDemo.find((d) => d.demoId === 'b')?.completion).toBe(100); // s3 gördü+tamamladı
   });
 });

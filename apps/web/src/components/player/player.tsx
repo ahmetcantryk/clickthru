@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { BrowserFrame, ScreenScene } from '@clickthru/ui';
 import type { Demo } from '@clickthru/schema';
 import { usePlayerStore } from '@/store/player-store';
+import { recordComplete, recordView } from '@/lib/analytics';
 import { resolveVars } from '@/lib/personalize';
 import { useT } from '@/lib/i18n';
 import { StepMedia } from './step-media';
@@ -29,6 +30,7 @@ export function Player({
   hideControls = false,
   autoAdvanceMs,
   vars,
+  track = false,
 }: {
   demo: Demo;
   onClose?: () => void;
@@ -38,22 +40,39 @@ export function Player({
   autoAdvanceMs?: number;
   /** Kişiselleştirme override'ları (kişiye özel link `?key=değer`). */
   vars?: Record<string, string>;
+  /** Analitik kaydı (view + tamamlanma). Yalnız /play ve canlı /embed'de açık; preview/export'ta kapalı. */
+  track?: boolean;
 }) {
   const { t } = useT();
   // `{{key}}` token'larını override → default ile çöz (callout/metin/başlık).
   const resolve = (s: string) => resolveVars(s, demo.variables, vars);
   const index = usePlayerStore((s) => s.index);
+  const total = usePlayerStore((s) => s.total);
   const init = usePlayerStore((s) => s.init);
   const next = usePlayerStore((s) => s.next);
   const prev = usePlayerStore((s) => s.prev);
   const [leadPassed, setLeadPassed] = useState(false);
+  const completedRef = useRef(false);
 
   const steps = demo.steps.filter((s) => !s.skip);
 
   useEffect(() => {
     init(steps.length);
     setLeadPassed(false);
+    completedRef.current = false;
   }, [demo.id, steps.length, init]);
+
+  // Analitik: oynatma açılınca view; son adıma ulaşınca (oturum başına bir kez) complete.
+  useEffect(() => {
+    if (track) recordView(demo.id);
+  }, [track, demo.id]);
+
+  useEffect(() => {
+    if (track && total > 0 && index >= total - 1 && !completedRef.current) {
+      completedRef.current = true;
+      recordComplete(demo.id);
+    }
+  }, [track, index, total, demo.id]);
 
   // Export modu: adımları otomatik ilerlet (son adımda durur).
   useEffect(() => {

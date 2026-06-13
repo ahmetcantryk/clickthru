@@ -23,6 +23,6 @@ export function EmbedPlayer({ demo }: { demo: Demo }) {
   return exportMode ? (
     <Player demo={demo} vars={vars} hideControls autoAdvanceMs={3600} />
   ) : (
-    <Player demo={demo} vars={vars} />
+    <Player demo={demo} vars={vars} track />
   );
 }

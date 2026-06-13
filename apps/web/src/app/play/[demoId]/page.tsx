@@ -3,7 +3,6 @@ import { sampleDemos } from '@clickthru/schema';
 import { getDemo } from '@/lib/demos';
 import { overridesFromParams } from '@/lib/personalize';
 import { Player } from '@/components/player/player';
-import { ViewTracker } from '@/components/player/view-tracker';
 
 // Saf player / paylaşım hedefi. Önce Supabase'den; bulunamazsa örnek demolara düşer.
 export default async function PlayPage({
@@ -33,9 +32,8 @@ export default async function PlayPage({
 
   return (
     <main className="h-screen bg-canvas p-4">
-      <ViewTracker demoId={demo.id} />
       <div className="mx-auto h-full w-full max-w-6xl">
-        <Player demo={demo} vars={vars} />
+        <Player demo={demo} vars={vars} track />
       </div>
     </main>
   );

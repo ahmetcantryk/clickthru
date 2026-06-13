@@ -127,9 +127,10 @@ function Insights() {
             <div className="flex items-center justify-between border-b border-hairline px-6 py-4">
               <h2 className="text-[15px] font-bold text-ink">{t.insights.topTitle}</h2>
             </div>
-            <div className="grid grid-cols-[1fr_auto_auto] gap-4 px-6 py-2.5 text-[11.5px] font-semibold uppercase tracking-wide text-ink-faint">
+            <div className="grid grid-cols-[1fr_auto_auto_auto] gap-4 px-6 py-2.5 text-[11.5px] font-semibold uppercase tracking-wide text-ink-faint">
               <span>{t.insights.colDemo}</span>
               <span className="w-24 text-right">{t.insights.colViews}</span>
+              <span className="w-24 text-right">{t.insights.colCompletion}</span>
               <span className="w-32 text-right">{t.insights.colLast}</span>
             </div>
             {loading ? (
@@ -138,7 +139,7 @@ function Insights() {
               stats.byDemo.slice(0, 6).map((row) => {
                 const d = byId.get(row.demoId);
                 return (
-                  <div key={row.demoId} className="grid grid-cols-[1fr_auto_auto] items-center gap-4 border-t border-hairline px-6 py-3 text-[14px]">
+                  <div key={row.demoId} className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-4 border-t border-hairline px-6 py-3 text-[14px]">
                     <div className="flex items-center gap-3 truncate">
                       <span className="h-8 w-12 flex-none overflow-hidden rounded-md bg-gradient-to-br from-accent-muted to-surface-subtle">
                         {d?.thumbnail && (
@@ -149,6 +150,7 @@ function Insights() {
                       <a href={`/play/${row.demoId}`} target="_blank" rel="noreferrer" className="truncate font-semibold text-ink hover:text-accent">{d?.title ?? row.demoId}</a>
                     </div>
                     <span className="w-24 text-right font-mono tabular-nums text-ink">{row.views.toLocaleString(locale)}</span>
+                    <span className="w-24 text-right font-mono tabular-nums text-ink-muted">{row.completion}%</span>
                     <span className="w-32 text-right text-[12.5px] text-ink-faint">{ago(row.last, t)}</span>
                   </div>
                 );
