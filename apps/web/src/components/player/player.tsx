@@ -113,7 +113,10 @@ export function Player({
 
   return (
     <div
-      className="relative flex h-full w-full flex-col overflow-hidden rounded-2xl"
+      className={cn(
+        'relative flex h-full w-full flex-col overflow-hidden rounded-2xl',
+        bare && 'items-center justify-center gap-2.5 p-4',
+      )}
       style={{ background: bare ? 'transparent' : THEATER }}
     >
       {/* tiyatro üst barı: logo + başlık (sol), kapat (sağ) — sade modda gizli */}
@@ -138,17 +141,18 @@ export function Player({
         </button>
       )}
 
-      {/* sahne — sade modda daha az kenar boşluğu + daha geniş (büyük önizleme) */}
+      {/* sahne — sade modda büyük + minimal kenar boşluğu (dock ayrı, altında) */}
       <div
         className={cn(
-          'relative flex min-h-0 flex-1 items-center justify-center',
-          bare ? 'px-4 pb-24 pt-8' : 'px-6 pb-28 pt-16',
+          bare
+            ? 'flex min-h-0 w-full items-center justify-center'
+            : 'relative flex min-h-0 flex-1 items-center justify-center px-6 pb-28 pt-16',
         )}
       >
-        <div className={cn('w-full', bare ? 'max-w-[1400px]' : 'max-w-5xl')}>
+        <div className={cn('w-full', bare ? 'max-w-[1500px]' : 'max-w-5xl')}>
           <ScreenScene
             data-theme="light"
-            className={cn('!h-auto', bare && 'p-[clamp(14px,3%,44px)]')}
+            className={cn('!h-auto', bare && 'p-[clamp(10px,2.5%,32px)]')}
             innerClassName={bare ? 'max-w-none' : undefined}
             background={background}
           >
@@ -200,17 +204,17 @@ export function Player({
         </div>
       </div>
 
-      {/* yüzen kontrol dock'u (sade modda daha dar + kompakt) */}
-      {!hideControls && (
-        <div
-          className={cn(
-            'absolute bottom-6 left-1/2 z-10 -translate-x-1/2',
-            bare ? 'w-[min(440px,calc(100%-32px))]' : 'w-[min(760px,calc(100%-48px))]',
-          )}
-        >
-          <ProgressBar steps={steps} compact={bare} />
-        </div>
-      )}
+      {/* kontrol dock'u — full: sahne üstünde yüzer; sade: sahnenin ALTINDA ek gibi (üstüne binmez) */}
+      {!hideControls &&
+        (bare ? (
+          <div className="w-[min(400px,calc(100%-32px))] flex-none">
+            <ProgressBar steps={steps} compact />
+          </div>
+        ) : (
+          <div className="absolute bottom-6 left-1/2 z-10 w-[min(760px,calc(100%-48px))] -translate-x-1/2">
+            <ProgressBar steps={steps} />
+          </div>
+        ))}
 
       {/* lead yakalama kapısı (turdan önce/sonra) */}
       {(showStartGate || showEndGate) && lead && (
