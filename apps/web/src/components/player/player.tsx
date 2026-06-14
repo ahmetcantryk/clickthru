@@ -145,8 +145,13 @@ export function Player({
           bare ? 'px-4 pb-24 pt-8' : 'px-6 pb-28 pt-16',
         )}
       >
-        <div className={cn('w-full', bare ? 'max-w-7xl' : 'max-w-5xl')}>
-          <ScreenScene data-theme="light" className="!h-auto" background={background}>
+        <div className={cn('w-full', bare ? 'max-w-[1400px]' : 'max-w-5xl')}>
+          <ScreenScene
+            data-theme="light"
+            className={cn('!h-auto', bare && 'p-[clamp(14px,3%,44px)]')}
+            innerClassName={bare ? 'max-w-none' : undefined}
+            background={background}
+          >
             <BrowserFrame url={`acme.com/${demo.id}`} variant={demo.wrapper ?? 'browser'}>
               <div className="relative aspect-video w-full overflow-hidden bg-white">
                 {/* görüntü katmanı: aynı medyada PAN, farklı medyada crossfade */}
@@ -195,10 +200,15 @@ export function Player({
         </div>
       </div>
 
-      {/* yüzen kontrol dock'u */}
+      {/* yüzen kontrol dock'u (sade modda daha dar + kompakt) */}
       {!hideControls && (
-        <div className="absolute bottom-6 left-1/2 z-10 w-[min(760px,calc(100%-48px))] -translate-x-1/2">
-          <ProgressBar steps={steps} />
+        <div
+          className={cn(
+            'absolute bottom-6 left-1/2 z-10 -translate-x-1/2',
+            bare ? 'w-[min(440px,calc(100%-32px))]' : 'w-[min(760px,calc(100%-48px))]',
+          )}
+        >
+          <ProgressBar steps={steps} compact={bare} />
         </div>
       )}
 

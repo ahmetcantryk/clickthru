@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { cn } from '@clickthru/ui';
 import type { Step } from '@clickthru/schema';
 import { usePlayerStore } from '@/store/player-store';
 import { useT } from '@/lib/i18n';
@@ -8,8 +9,9 @@ import { useT } from '@/lib/i18n';
 /**
  * Yüzen koyu cam kontrol dock'u (design player).
  * Geniş segmentli ilerleme: geçmiş/aktif dolu; aktif VIDEO segmenti süreyle dolar.
+ * `compact` = önizleme için daha küçük/minimal dock.
  */
-export function ProgressBar({ steps }: { steps: Step[] }) {
+export function ProgressBar({ steps, compact = false }: { steps: Step[]; compact?: boolean }) {
   const { t } = useT();
   const index = usePlayerStore((s) => s.index);
   const next = usePlayerStore((s) => s.next);
@@ -25,26 +27,37 @@ export function ProgressBar({ steps }: { steps: Step[] }) {
     return 100;
   }
 
+  const btn = cn(
+    'flex flex-none items-center justify-center rounded-lg transition-colors',
+    compact ? 'h-7 w-7' : 'h-9 w-9',
+  );
+  const icon = compact ? 'h-3.5 w-3.5' : 'h-4 w-4';
+
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-[rgba(18,20,28,0.72)] px-4 py-3.5 shadow-[0_16px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+    <div
+      className={cn(
+        'flex items-center rounded-2xl border border-white/10 bg-[rgba(18,20,28,0.72)] shadow-[0_16px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl',
+        compact ? 'gap-2.5 px-2.5 py-2' : 'gap-4 px-4 py-3.5',
+      )}
+    >
       <button
         type="button"
         onClick={prev}
         disabled={index <= 0}
         aria-label={t.studio.back}
-        className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-white/10 text-white transition-colors hover:bg-white/20 disabled:opacity-30 disabled:hover:bg-white/10"
+        className={cn(btn, 'bg-white/10 text-white hover:bg-white/20 disabled:opacity-30 disabled:hover:bg-white/10')}
       >
-        <ChevronLeft className="h-4 w-4" />
+        <ChevronLeft className={icon} />
       </button>
 
-      <div className="flex flex-1 items-center gap-1.5">
+      <div className={cn('flex flex-1 items-center', compact ? 'gap-1' : 'gap-1.5')}>
         {steps.map((s, i) => (
           <button
             key={s.id}
             type="button"
             aria-label={t.studio.stepN(i + 1)}
             onClick={() => goTo(i)}
-            className="relative h-1 flex-1 overflow-hidden rounded-full bg-white/20"
+            className={cn('relative flex-1 overflow-hidden rounded-full bg-white/20', compact ? 'h-[3px]' : 'h-1')}
             style={{ flexGrow: s.type === 'video' ? 1.6 : 1 }}
           >
             <span
@@ -55,7 +68,12 @@ export function ProgressBar({ steps }: { steps: Step[] }) {
         ))}
       </div>
 
-      <span className="flex-none font-mono text-xs font-semibold tabular-nums text-white/70">
+      <span
+        className={cn(
+          'flex-none font-mono font-semibold tabular-nums text-white/70',
+          compact ? 'text-[10.5px]' : 'text-xs',
+        )}
+      >
         {Math.min(index + 1, total)} / {total}
       </span>
 
@@ -64,9 +82,9 @@ export function ProgressBar({ steps }: { steps: Step[] }) {
         onClick={next}
         disabled={index >= total - 1}
         aria-label={t.studio.next}
-        className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-accent text-white transition-[filter] hover:brightness-110 disabled:opacity-30"
+        className={cn(btn, 'bg-accent text-white transition-[filter] hover:brightness-110 disabled:opacity-30')}
       >
-        <ChevronRight className="h-4 w-4" />
+        <ChevronRight className={icon} />
       </button>
     </div>
   );
