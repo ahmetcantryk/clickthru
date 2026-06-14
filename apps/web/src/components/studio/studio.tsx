@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Check, PanelLeft, PanelRight, Pencil, Play, Share2, ShieldCheck, TriangleAlert } from 'lucide-react';
+import { Check, PanelLeft, PanelRight, Pencil, Play, Share2, TriangleAlert } from 'lucide-react';
 import { Button, cn } from '@clickthru/ui';
-import { safeValidateDemo, type Demo } from '@clickthru/schema';
+import type { Demo } from '@clickthru/schema';
 import { useEditorStore } from '@/store/editor-store';
 import { getErrorMessage, saveDemo } from '@/lib/demos';
 import { useT } from '@/lib/i18n';
@@ -39,11 +39,8 @@ export function Studio({ initialDemo }: { initialDemo?: Demo }) {
     if (initialDemo) loadDemo(initialDemo);
   }, [initialDemo, loadDemo]);
 
-  function validate() {
-    const res = safeValidateDemo(demo);
-    setStatus(res.ok ? { kind: 'success', text: t.studio.validJson } : { kind: 'error', text: res.errors[0] ?? t.studio.invalid });
-    setTimeout(() => setStatus(null), 2800);
-  }
+  // Önizleme yalnız oynatılabilir (atlanmamış) adım varsa açılır.
+  const playableSteps = demo.steps.filter((s) => !s.skip).length;
 
   async function share() {
     setBusy(true);
@@ -93,11 +90,13 @@ export function Studio({ initialDemo }: { initialDemo?: Demo }) {
           </span>
         )}
 
-        <Button variant="ghost" size="sm" onClick={validate}>
-          <ShieldCheck className="h-4 w-4" />
-          {t.studio.validate}
-        </Button>
-        <Button variant="outline" size="sm" onClick={() => setPreview(true)}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setPreview(true)}
+          disabled={playableSteps === 0}
+          title={playableSteps === 0 ? t.studio.previewEmpty : undefined}
+        >
           <Play className="h-4 w-4" />
           {t.studio.preview}
         </Button>
