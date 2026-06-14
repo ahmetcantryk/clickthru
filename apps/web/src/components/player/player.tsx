@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
-import { BrowserFrame, ScreenScene } from '@clickthru/ui';
+import { BrowserFrame, cn, ScreenScene } from '@clickthru/ui';
 import type { Demo } from '@clickthru/schema';
 import { usePlayerStore } from '@/store/player-store';
 import { recordComplete, recordView } from '@/lib/analytics';
@@ -31,6 +31,7 @@ export function Player({
   autoAdvanceMs,
   vars,
   track = false,
+  bare = false,
 }: {
   demo: Demo;
   onClose?: () => void;
@@ -42,6 +43,8 @@ export function Player({
   vars?: Record<string, string>;
   /** Analitik kaydı (view + tamamlanma). Yalnız /play ve canlı /embed'de açık; preview/export'ta kapalı. */
   track?: boolean;
+  /** Sade mod: koyu tiyatro + üst bar yok (şeffaf, daha büyük sahne). Önizleme dış kabuğu kontrolleri sağlar. */
+  bare?: boolean;
 }) {
   const { t } = useT();
   // `{{key}}` token'larını override → default ile çöz (callout/metin/başlık).
@@ -109,16 +112,21 @@ export function Player({
   const showEndGate = leadActive && lead?.position === 'end' && !leadPassed && isLast;
 
   return (
-    <div className="relative flex h-full w-full flex-col overflow-hidden rounded-2xl" style={{ background: THEATER }}>
-      {/* tiyatro üst barı: logo + başlık (sol), kapat (sağ) */}
-      <div className="pointer-events-none absolute left-6 top-5 z-10 flex items-center gap-2.5">
-        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-accent">
-          <svg width="12" height="12" viewBox="0 0 15 15" fill="none" aria-hidden>
-            <path d="M2 2.5L11.5 7.5L7 8.2L9.2 12L7.4 12.9L5.2 9.1L2 11.5z" fill="#fff" />
-          </svg>
-        </span>
-        <span className="text-[13.5px] font-semibold text-white/85">{resolve(demo.title)}</span>
-      </div>
+    <div
+      className="relative flex h-full w-full flex-col overflow-hidden rounded-2xl"
+      style={{ background: bare ? 'transparent' : THEATER }}
+    >
+      {/* tiyatro üst barı: logo + başlık (sol), kapat (sağ) — sade modda gizli */}
+      {!bare && (
+        <div className="pointer-events-none absolute left-6 top-5 z-10 flex items-center gap-2.5">
+          <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-accent">
+            <svg width="12" height="12" viewBox="0 0 15 15" fill="none" aria-hidden>
+              <path d="M2 2.5L11.5 7.5L7 8.2L9.2 12L7.4 12.9L5.2 9.1L2 11.5z" fill="#fff" />
+            </svg>
+          </span>
+          <span className="text-[13.5px] font-semibold text-white/85">{resolve(demo.title)}</span>
+        </div>
+      )}
       {onClose && (
         <button
           type="button"
@@ -130,9 +138,14 @@ export function Player({
         </button>
       )}
 
-      {/* sahne */}
-      <div className="relative flex min-h-0 flex-1 items-center justify-center px-6 pb-28 pt-16">
-        <div className="w-full max-w-5xl">
+      {/* sahne — sade modda daha az kenar boşluğu + daha geniş (büyük önizleme) */}
+      <div
+        className={cn(
+          'relative flex min-h-0 flex-1 items-center justify-center',
+          bare ? 'px-4 pb-24 pt-8' : 'px-6 pb-28 pt-16',
+        )}
+      >
+        <div className={cn('w-full', bare ? 'max-w-7xl' : 'max-w-5xl')}>
           <ScreenScene data-theme="light" className="!h-auto" background={background}>
             <BrowserFrame url={`acme.com/${demo.id}`} variant={demo.wrapper ?? 'browser'}>
               <div className="relative aspect-video w-full overflow-hidden bg-white">
