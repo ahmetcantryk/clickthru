@@ -12,7 +12,7 @@ import type {
   Wrapper,
 } from '@clickthru/schema';
 import { sampleZoomDemo } from '@clickthru/schema';
-import { genId } from '@/lib/id';
+import { genDemoId, genId } from '@/lib/id';
 
 /** Zoom dikdörtgeni (oransal sol-üst köşe + boyut). */
 export type FocusRect = { x: number; y: number; w: number; h: number };
@@ -142,7 +142,8 @@ export const useEditorStore = create<EditorState>((set, get) => {
     prepareShare: () => {
       const { demo } = get();
       if (!SAMPLE_IDS.has(demo.id)) return demo.id;
-      const id = genId('demo');
+      // Örnek demo paylaşılıyor → tahmin edilemez yeni id ata (URL gizliliği).
+      const id = genDemoId();
       set({ demo: { ...demo, id } });
       return id;
     },

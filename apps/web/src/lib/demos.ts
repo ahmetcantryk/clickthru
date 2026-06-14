@@ -1,7 +1,7 @@
 import type { Demo, Step } from '@clickthru/schema';
 import { safeValidateDemo } from '@clickthru/schema';
 import { createSupabaseClient } from './supabase/client';
-import { genId } from './id';
+import { genDemoId } from './id';
 import { isDataUrl, uploadDataUrl } from './storage';
 
 /**
@@ -35,11 +35,6 @@ async function persistInlineMedia(demo: Demo): Promise<Demo> {
   return changed ? { ...demo, steps } : demo;
 }
 
-/** demos tablosu satırı (yalnızca okuduğumuz alanlar). */
-interface DemoRow {
-  data: unknown;
-}
-
 /** Workspaces listesinde gösterilen özet (tam demo değil). */
 export interface DemoSummary {
   id: string;
@@ -69,7 +64,7 @@ async function currentUserId(): Promise<string | null> {
 /** Boş bir demo (Sıfırdan başla) — editör boş durumla açılır. */
 export function blankDemo(): Demo {
   return {
-    id: genId('demo'),
+    id: genDemoId(),
     title: 'Adsız demo',
     defaultBackground: '#F5F4F2',
     wrapper: 'browser',
@@ -157,21 +152,21 @@ export async function renameDemo(id: string, title: string): Promise<void> {
 }
 
 /**
- * id'ye göre demo getirir; bulunamazsa null. Dönen JSON şemayla doğrulanır
- * (güvenilmeyen kaynak — kötü kayıt player'ı bozmasın). RLS: public veya sahip.
+ * id'ye göre PUBLIC demo getirir; bulunamazsa null. Dönen JSON şemayla doğrulanır
+ * (güvenilmeyen kaynak — kötü kayıt player'ı bozmasın).
+ *
+ * Gizlilik: SECURITY DEFINER `get_public_demo(id)` RPC'si üzerinden okur — yalnızca
+ * **id'yi bilen** erişir, demolar tablosu listelenemez (enumerasyon engellendi).
+ * Bu yüzden paylaşım id'leri tahmin edilemez olmalı (bkz. genDemoId).
  */
 export async function getDemo(id: string): Promise<Demo | null> {
   const supabase = createSupabaseClient();
-  const { data, error } = await supabase
-    .from('demos')
-    .select('data')
-    .eq('id', id)
-    .maybeSingle<DemoRow>();
+  const { data, error } = await supabase.rpc('get_public_demo', { p_id: id });
 
   if (error) throw new Error(`Demo getirilemedi: ${error.message}`);
   if (!data) return null;
 
-  const res = safeValidateDemo(data.data);
+  const res = safeValidateDemo(data);
   return res.ok ? res.demo : null;
 }
 
