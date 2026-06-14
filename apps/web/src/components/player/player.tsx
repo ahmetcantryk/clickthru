@@ -115,7 +115,7 @@ export function Player({
     <div
       className={cn(
         'relative flex h-full w-full flex-col overflow-hidden rounded-2xl',
-        bare && 'items-center justify-center gap-2.5 p-4',
+        bare && 'items-center justify-center gap-3 p-8',
       )}
       style={{ background: bare ? 'transparent' : THEATER }}
     >
@@ -149,7 +149,12 @@ export function Player({
             : 'relative flex min-h-0 flex-1 items-center justify-center px-6 pb-28 pt-16',
         )}
       >
-        <div className={cn('w-full', bare ? 'max-w-[1500px]' : 'max-w-5xl')}>
+        <div
+          className={cn('w-full', !bare && 'max-w-5xl')}
+          // Sade modda sahneyi VIEWPORT YÜKSEKLIĞINE göre sınırla → her zaman ortalı,
+          // her kenardan boşluklu sığar (üste yapışmaz). Genişlik 1040px ile de sınırlı.
+          style={bare ? { maxWidth: 'min(1040px, calc((100vh - 240px) * 1.5))' } : undefined}
+        >
           <ScreenScene
             data-theme="light"
             className={cn('!h-auto', bare && 'p-[clamp(10px,2.5%,32px)]')}
